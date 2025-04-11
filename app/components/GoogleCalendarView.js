@@ -5,24 +5,86 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
-const GoogleCalendarView = ({ events }) => {
-  const [calendarEvents, setCalendarEvents] = useState([]);
+const GoogleCalendarView = () => {
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [view, setView] = useState('timeGridWeek');
   const calendarRef = useRef(null);
 
   useEffect(() => {
-    if (events) {
-      setCalendarEvents(events);
-    }
-  }, [events]);
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/calendar/events');
+        if (!response.ok) {
+          throw new Error('Failed to fetch calendar events');
+        }
+        const data = await response.json();
+        setEvents(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const handleViewChange = (newView) => {
-    setView(newView);
+    fetchEvents();
+  }, []);
+
+  // Function to change calendar view
+  const changeView = (newView) => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.changeView(newView);
+      setView(newView);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-purple-500/20">
+          <div className="p-8">
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-white mb-2">Fetching Your Calendar Events</h3>
+                <p className="text-gray-400 max-w-md">
+                  Please wait while we sync your latest calendar events...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-red-500/20">
+          <div className="p-8 text-center">
+            <div className="text-red-400 mb-4">Error: {error}</div>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-purple-500/20">
@@ -32,29 +94,32 @@ const GoogleCalendarView = ({ events }) => {
           <h2 className="text-xl font-bold text-white">Your Calendar</h2>
           <div className="flex space-x-2">
             <button
-              onClick={() => handleViewChange('timeGridDay')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridDay'
+              onClick={() => changeView('timeGridDay')}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${
+                view === 'timeGridDay'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+              }`}
             >
               Day
             </button>
             <button
-              onClick={() => handleViewChange('timeGridWeek')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridWeek'
+              onClick={() => changeView('timeGridWeek')}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${
+                view === 'timeGridWeek'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+              }`}
             >
               Week
             </button>
             <button
-              onClick={() => handleViewChange('dayGridMonth')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'dayGridMonth'
+              onClick={() => changeView('dayGridMonth')}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${
+                view === 'dayGridMonth'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+              }`}
             >
               Month
             </button>
@@ -126,7 +191,7 @@ const GoogleCalendarView = ({ events }) => {
               center: 'title',
               right: '',
             }}
-            events={calendarEvents}
+            events={events}
             height="700px"
             editable={false}
             selectable={true}

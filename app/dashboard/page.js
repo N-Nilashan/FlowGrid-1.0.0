@@ -11,6 +11,12 @@ const GoogleCalendarView = dynamic(
   { ssr: false }
 );
 
+// Dynamically import the TaskView component
+const TaskView = dynamic(
+  () => import('../components/TaskView'),
+  { ssr: false }
+);
+
 const Dashboard = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -19,6 +25,23 @@ const Dashboard = () => {
   const [isCalendarConnected, setIsCalendarConnected] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Remove the screen size effect since we want consistent behavior
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarOpen]);
+
+  // Toggle sidebar function
+  const toggleSidebar = () => {
+    setSidebarOpen(prevState => !prevState);
+  };
 
   // Check if calendar is connected and fetch events
   useEffect(() => {
@@ -80,10 +103,10 @@ const Dashboard = () => {
 
   const navItems = [
     { name: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+    { name: 'Google Calendar', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+    { name: 'Tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
     { name: 'Study Sessions', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
     { name: 'Notes', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
-    { name: 'Tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-    { name: 'Google Calendar', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
   ];
 
   const bottomNavItems = [
@@ -93,6 +116,33 @@ const Dashboard = () => {
   ];
 
   const renderGoogleCalendarSection = () => {
+    if (isLoading) {
+      return (
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-purple-500/20">
+            <div className="p-8">
+              <div className="flex flex-col items-center justify-center space-y-6">
+                <div className="relative">
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h3 className="text-xl font-semibold text-white mb-2">Checking Calendar Connection</h3>
+                  <p className="text-gray-400 max-w-md">
+                    Verifying your Google Calendar access...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (isCalendarConnected) {
       return <GoogleCalendarView events={calendarEvents} />;
     }
@@ -171,19 +221,20 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       {/* Navbar */}
-      <nav className="bg-gray-800 border-b border-gray-700 shadow-lg">
+      <nav className="bg-gray-800 border-b border-gray-700 shadow-lg fixed w-full top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="inline-flex md:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
+                onClick={toggleSidebar}
+                className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                aria-label="Toggle sidebar"
               >
                 <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <div className="flex-shrink-0 flex items-center">
+              <div className="flex-shrink-0 flex items-center ml-4">
                 <span className="text-purple-500 text-2xl font-bold">StudyFlow</span>
               </div>
             </div>
@@ -195,9 +246,9 @@ const Dashboard = () => {
                       <div className="text-sm font-medium text-white">{session.user?.name}</div>
                       <div className="text-xs text-gray-400">{session.user?.email}</div>
                     </div>
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500 shadow-lg shadow-purple-500/20">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500">
                       {session.user?.image ? (
-                        <img src={session.user?.image} alt="User Image" className="w-7 h-7 rounded-full" />
+                        <img src={session.user?.image} alt="User" className="w-full h-full object-cover" />
                       ) : (
                         <div className="h-full bg-gray-700 flex items-center justify-center">
                           <span className="text-gray-300 text-sm">{session.user?.name?.[0]}</span>
@@ -212,16 +263,24 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      <div className="flex-1 flex">
+      <div className="flex flex-1 pt-16">
         {/* Sidebar */}
-        <div className={`bg-gray-800 border-r border-gray-700 shadow-lg ${sidebarOpen ? 'block' : 'hidden'} md:block w-64 flex-shrink-0`}>
+        <div
+          className={`fixed inset-y-0 left-0 transform z-30 w-64 bg-gray-800 border-r border-gray-700 pt-16 transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+        >
           <div className="h-full flex flex-col justify-between py-4">
-            <div className="px-4 space-y-1">
+            <div className="px-4 space-y-1 -mt-[56px]">
               {navItems.map((item) => (
                 <button
                   key={item.name}
-                  onClick={() => setActiveTab(item.name)}
-                  className={`group flex items-center w-full px-2 py-3 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 ${activeTab === item.name ? 'bg-gray-700 text-white' : ''
+                  onClick={() => {
+                    setActiveTab(item.name);
+                    if (window.innerWidth < 768) {
+                      setSidebarOpen(false);
+                    }
+                  }}
+                  className={`group flex items-center w-full px-2 py-2.5 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 ${activeTab === item.name ? 'bg-gray-700 text-white' : ''
                     }`}
                 >
                   <svg
@@ -285,11 +344,20 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Main content */}
-        <div className="flex-1 overflow-auto">
+        {/* Overlay - show on all devices when sidebar is open */}
+        <div
+          className={`fixed inset-0 bg-black transition-opacity duration-300 ease-in-out ${sidebarOpen ? 'opacity-50 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        {/* Main content - adjust margin based on sidebar state */}
+        <div className={`flex-1 overflow-auto w-full transition-all duration-300 ease-in-out`}>
           <main className="px-4 py-6 sm:px-6 lg:px-8">
             {activeTab === 'Google Calendar' ? (
               renderGoogleCalendarSection()
+            ) : activeTab === 'Tasks' ? (
+              <TaskView />
             ) : (
               <>
                 {/* Greeting section */}
