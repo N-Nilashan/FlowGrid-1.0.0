@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -8,12 +8,21 @@ import interactionPlugin from '@fullcalendar/interaction';
 const GoogleCalendarView = ({ events }) => {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [view, setView] = useState('timeGridWeek');
+  const calendarRef = useRef(null);
 
   useEffect(() => {
     if (events) {
       setCalendarEvents(events);
     }
   }, [events]);
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.changeView(newView);
+    }
+  };
 
   return (
     <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-purple-500/20">
@@ -23,7 +32,7 @@ const GoogleCalendarView = ({ events }) => {
           <h2 className="text-xl font-bold text-white">Your Calendar</h2>
           <div className="flex space-x-2">
             <button
-              onClick={() => setView('timeGridDay')}
+              onClick={() => handleViewChange('timeGridDay')}
               className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridDay'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -32,7 +41,7 @@ const GoogleCalendarView = ({ events }) => {
               Day
             </button>
             <button
-              onClick={() => setView('timeGridWeek')}
+              onClick={() => handleViewChange('timeGridWeek')}
               className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridWeek'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -41,7 +50,7 @@ const GoogleCalendarView = ({ events }) => {
               Week
             </button>
             <button
-              onClick={() => setView('dayGridMonth')}
+              onClick={() => handleViewChange('dayGridMonth')}
               className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'dayGridMonth'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -109,6 +118,7 @@ const GoogleCalendarView = ({ events }) => {
             }
           `}</style>
           <FullCalendar
+            ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView={view}
             headerToolbar={{
@@ -118,7 +128,6 @@ const GoogleCalendarView = ({ events }) => {
             }}
             events={calendarEvents}
             height="700px"
-            view={view}
             editable={false}
             selectable={true}
             selectMirror={true}
