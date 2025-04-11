@@ -36,7 +36,7 @@ export default function Home() {
             </div>
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Link href="/signup" className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300">
+                <Link href="/dashboard" className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300">
                   Get Started
                 </Link>
               </div>
@@ -62,7 +62,7 @@ export default function Home() {
                 </p>
                 <div className="mt-8 sm:flex space-x-4">
                   <div className="rounded-md shadow-lg shadow-purple-500/20">
-                    <Link href="/signup" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 md:text-lg transition-all duration-300 hover:shadow-purple-500/30">
+                    <Link href="/dashboard" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 md:text-lg transition-all duration-300 hover:shadow-purple-500/30">
                       Start for free
                     </Link>
                   </div>
@@ -251,7 +251,7 @@ export default function Home() {
           </h2>
           <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0 space-x-4">
             <div className="rounded-md shadow-lg shadow-purple-500/30">
-              <Link href="/signup" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-purple-900 bg-white hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02]">
+              <Link href="/dashboard" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-purple-900 bg-white hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02]">
                 Get started
               </Link>
             </div>
