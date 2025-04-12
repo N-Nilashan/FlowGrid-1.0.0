@@ -8,35 +8,88 @@ const TaskView = () => {
   const [viewMode, setViewMode] = useState('today'); // 'today' or 'weekly'
   const [completedTasks, setCompletedTasks] = useState(new Set());
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch('/api/tasks/process');
-        if (!response.ok) {
-          throw new Error('Failed to fetch tasks');
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(`/api/tasks/process?view=${viewMode}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks');
+      }
+      const data = await response.json();
+      setTasks(data);
+
+      // Set initial completed tasks
+      const completed = new Set();
+      [...data.studies, ...data.personal].forEach(task => {
+        if (task.completed) {
+          completed.add(task.id);
         }
-        const data = await response.json();
-        setTasks(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      });
+      setCompletedTasks(completed);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [viewMode]);
 
-  const handleTaskCompletion = (taskId) => {
-    setCompletedTasks(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(taskId)) {
-        newSet.delete(taskId);
-      } else {
-        newSet.add(taskId);
+  const handleTaskCompletion = async (taskId) => {
+    try {
+      const newCompleted = !completedTasks.has(taskId);
+
+      // Optimistically update UI
+      setCompletedTasks(prev => {
+        const newSet = new Set(prev);
+        if (newCompleted) {
+          newSet.add(taskId);
+        } else {
+          newSet.delete(taskId);
+        }
+        return newSet;
+      });
+
+      // Update through API
+      const response = await fetch('/api/tasks/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          taskId,
+          completed: newCompleted
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update task');
       }
-      return newSet;
-    });
+
+      // Update the tasks state locally instead of fetching again
+      setTasks(prevTasks => ({
+        studies: prevTasks.studies.map(task =>
+          task.id === taskId ? { ...task, completed: newCompleted } : task
+        ),
+        personal: prevTasks.personal.map(task =>
+          task.id === taskId ? { ...task, completed: newCompleted } : task
+        ),
+      }));
+
+    } catch (err) {
+      console.error('Error updating task completion:', err);
+      // Revert optimistic update on error
+      setCompletedTasks(prev => {
+        const newSet = new Set(prev);
+        if (completedTasks.has(taskId)) {
+          newSet.add(taskId);
+        } else {
+          newSet.delete(taskId);
+        }
+        return newSet;
+      });
+    }
   };
 
   const filterTasksByDate = (tasks, mode) => {
