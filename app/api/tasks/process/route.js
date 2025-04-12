@@ -46,7 +46,7 @@ export async function GET(req) {
     console.log('Fetching calendar events...');
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-    // Set up date range
+    // Fetch calendar events
     const now = new Date();
     // Set to start of today (12 AM)
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -59,6 +59,22 @@ export async function GET(req) {
       start: startOfToday.toISOString(),
       end: endOfWeek.toISOString()
     });
+
+    // First, get existing tasks to preserve completion status
+    const { data: existingTasks, error: existingTasksError } = await supabaseAdmin
+      .from('tasks')
+      .select('id, completed')
+      .eq('user_id', session.user.email);
+
+    if (existingTasksError) {
+      console.error('Error fetching existing tasks:', existingTasksError);
+      throw new Error('Failed to fetch existing tasks');
+    }
+
+    // Create a map of existing task completion status
+    const existingTasksMap = new Map(
+      existingTasks.map(task => [task.id, task.completed])
+    );
 
     const response = await calendar.events.list({
       calendarId: 'primary',
@@ -89,7 +105,8 @@ export async function GET(req) {
         priority: determinePriority(event),
         category: determineCategory(event),
         user_id: session.user.email,
-        completed: false,
+        // Preserve completion status if task exists, otherwise set to false
+        completed: existingTasksMap.has(event.id) ? existingTasksMap.get(event.id) : false,
         created_at: new Date().toISOString()
       };
     });
