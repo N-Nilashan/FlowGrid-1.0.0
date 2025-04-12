@@ -248,7 +248,7 @@ const Dashboard = () => {
                     </div>
                     <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500">
                       {session.user?.image ? (
-                        <img src={session.user?.image} alt="User" className="w-full h-full object-cover" />
+                        <img src={session.user?.image} alt="User" className="w-7 h-7 object-cover" />
                       ) : (
                         <div className="h-full bg-gray-700 flex items-center justify-center">
                           <span className="text-gray-300 text-sm">{session.user?.name?.[0]}</span>
@@ -270,7 +270,7 @@ const Dashboard = () => {
             }`}
         >
           <div className="h-full flex flex-col justify-between py-4">
-            <div className="px-4 space-y-1 -mt-[56px]">
+            <div className="px-4 space-y-1 mt-5">
               {navItems.map((item) => (
                 <button
                   key={item.name}
