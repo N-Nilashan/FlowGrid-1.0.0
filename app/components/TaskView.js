@@ -43,17 +43,20 @@ const TaskView = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 7);
+    const endOfToday = new Date(today);
+    endOfToday.setHours(23, 59, 59, 999);
+
+    const sevenDaysFromNow = new Date(today);
+    sevenDaysFromNow.setDate(today.getDate() + 7);
+    sevenDaysFromNow.setHours(23, 59, 59, 999);
 
     return tasks.filter(task => {
       const taskDate = new Date(task.start);
-      taskDate.setHours(0, 0, 0, 0);
 
       if (mode === 'today') {
-        return taskDate.getTime() === today.getTime();
+        return taskDate >= today && taskDate <= endOfToday;
       } else { // weekly
-        return taskDate >= sevenDaysAgo && taskDate <= today;
+        return taskDate >= today && taskDate <= sevenDaysFromNow;
       }
     });
   };
@@ -88,8 +91,8 @@ const TaskView = () => {
   const TaskItem = ({ task }) => (
     <div
       className={`flex items-center space-x-4 p-4 bg-gray-800 rounded-lg mb-3 border border-purple-500/10 hover:border-purple-500/30 transition-all duration-500 ease-in-out cursor-pointer transform ${completedTasks.has(task.id)
-          ? 'opacity-75 scale-98 translate-y-2'
-          : 'opacity-100 scale-100 translate-y-0'
+        ? 'opacity-75 scale-98 translate-y-2'
+        : 'opacity-100 scale-100 translate-y-0'
         }`}
     >
       <input
@@ -100,8 +103,8 @@ const TaskView = () => {
       />
       <div className="flex-1 transition-all duration-500 ease-in-out">
         <h3 className={`text-base font-medium transition-all duration-500 ease-in-out transform ${completedTasks.has(task.id)
-            ? 'text-gray-500 line-through translate-x-2'
-            : 'text-white translate-x-0'
+          ? 'text-gray-500 line-through translate-x-2'
+          : 'text-white translate-x-0'
           }`}>
           {task.title}
         </h3>

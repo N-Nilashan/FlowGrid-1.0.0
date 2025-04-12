@@ -37,7 +37,7 @@ function categorizeEvent(event) {
   const studyKeywords = [
     'class', 'lecture', 'exam', 'test', 'study', 'assignment',
     'project', 'homework', 'research', 'seminar', 'workshop',
-    'tutorial', 'lab', 'presentation', 'paper', 'quiz','physics','chemistry','maths'
+    'tutorial', 'lab', 'presentation', 'paper', 'quiz', 'physics', 'chemistry', 'maths'
   ];
 
   // Check if any study keywords are present
@@ -71,8 +71,9 @@ export async function GET(request) {
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-    // Get events for the next 30 days
+    // Get events starting from current date's 12 am
     const now = new Date();
+    now.setHours(0, 0, 0, 0); // Set to start of day
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(now.getDate() + 30);
 

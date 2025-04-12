@@ -31,8 +31,9 @@ export async function GET(request) {
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   try {
-    // Get events for the next 30 days
+    // Get events starting from current date's 12 am
     const now = new Date();
+    now.setHours(0, 0, 0, 0); // Set to start of day
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(now.getDate() + 30);
 
