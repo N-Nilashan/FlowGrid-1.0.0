@@ -199,8 +199,8 @@ const GoogleCalendarView = () => {
             dayMaxEvents={true}
             weekends={true}
             nowIndicator={true}
-            slotMinTime="06:00:00"
-            slotMaxTime="22:00:00"
+            slotMinTime="00:00:00"
+            slotMaxTime="23:59:00"
           />
         </div>
       </div>
