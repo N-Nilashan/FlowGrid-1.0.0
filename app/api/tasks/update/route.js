@@ -18,7 +18,7 @@ export async function POST(req) {
       });
     }
 
-    const { taskId, completed } = await req.json();
+    const { taskId, completed, category } = await req.json();
 
     if (!taskId) {
       return new Response(JSON.stringify({ error: 'Task ID is required' }), {
@@ -48,10 +48,15 @@ export async function POST(req) {
       });
     }
 
-    // Update task completion status
+    // Prepare update data
+    const updateData = {};
+    if (completed !== undefined) updateData.completed = completed;
+    if (category !== undefined) updateData.category = category;
+
+    // Update task
     const { error: updateError } = await supabaseAdmin
       .from('tasks')
-      .update({ completed })
+      .update(updateData)
       .eq('id', taskId);
 
     if (updateError) {
