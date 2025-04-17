@@ -10,6 +10,7 @@ const GoogleCalendarView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [view, setView] = useState('timeGridWeek');
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const calendarRef = useRef(null);
 
   useEffect(() => {
@@ -87,7 +88,121 @@ const GoogleCalendarView = () => {
   }
 
   return (
-    <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-purple-500/20">
+    <div className="bg-[#131314] rounded-xl shadow-2xl overflow-hidden border border-purple-500/20">
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div
+            className="bg-[#1A1A1C] rounded-2xl max-w-lg w-full shadow-2xl border border-white/10"
+            style={{
+              background: 'linear-gradient(145deg, #1A1A1C 0%, #131314 100%)'
+            }}
+          >
+            {/* Header with color accent */}
+            <div
+              className="p-6 rounded-t-2xl flex justify-between items-start"
+              style={{
+                backgroundColor: selectedEvent.backgroundColor,
+                borderBottom: `1px solid ${selectedEvent.borderColor}`
+              }}
+            >
+              <h3 className="text-2xl font-semibold text-white break-words max-w-[80%]">
+                {selectedEvent.title}
+              </h3>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="text-white/80 hover:text-white transition-colors p-1 hover:bg-black/20 rounded-full"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* Time Section */}
+              <div className="flex items-start space-x-3">
+                <div className="text-purple-400 mt-1">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white font-medium">
+                    {selectedEvent.allDay ? (
+                      new Date(selectedEvent.start).toLocaleDateString(undefined, {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })
+                    ) : (
+                      <>
+                        {new Date(selectedEvent.start).toLocaleDateString(undefined, {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                        <br />
+                        <span className="text-gray-400">
+                          {new Date(selectedEvent.start).toLocaleTimeString(undefined, {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                          {' - '}
+                          {new Date(selectedEvent.end).toLocaleTimeString(undefined, {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </>
+                    )}
+                  </p>
+                  {selectedEvent.allDay && (
+                    <span className="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      All Day
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Location Section */}
+              {selectedEvent.location && (
+                <div className="flex items-start space-x-3">
+                  <div className="text-purple-400 mt-1">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white/80">{selectedEvent.location}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Description Section */}
+              {selectedEvent.description && (
+                <div className="flex items-start space-x-3">
+                  <div className="text-purple-400 mt-1">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white/80 whitespace-pre-wrap">{selectedEvent.description}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="p-6">
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-6">
@@ -95,31 +210,28 @@ const GoogleCalendarView = () => {
           <div className="flex space-x-2">
             <button
               onClick={() => changeView('timeGridDay')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${
-                view === 'timeGridDay'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridDay'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
             >
               Day
             </button>
             <button
               onClick={() => changeView('timeGridWeek')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${
-                view === 'timeGridWeek'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridWeek'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
             >
               Week
             </button>
             <button
               onClick={() => changeView('dayGridMonth')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${
-                view === 'dayGridMonth'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'dayGridMonth'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
             >
               Month
             </button>
@@ -137,9 +249,9 @@ const GoogleCalendarView = () => {
               --fc-button-hover-border-color: #374151;
               --fc-button-active-bg-color: #7C3AED;
               --fc-button-active-border-color: #7C3AED;
-              --fc-event-bg-color: #7C3AED;
-              --fc-event-border-color: #7C3AED;
               --fc-today-bg-color: rgba(124, 58, 237, 0.1);
+              --fc-page-bg-color: #131314;
+              --fc-neutral-bg-color: #131314;
             }
             .fc-theme-standard td, .fc-theme-standard th {
               border-color: rgba(75, 85, 99, 0.5);
@@ -164,22 +276,56 @@ const GoogleCalendarView = () => {
               color: #F3F4F6;
             }
             .fc-event {
-              background: #7C3AED;
-              border: none;
               padding: 2px 4px;
-              border-radius: 4px;
+              border: none !important;
+              border-radius: 4px !important;
               font-size: 12px;
+              cursor: pointer;
             }
             .fc-event:hover {
-              background: #6D28D9;
+              filter: brightness(90%);
+            }
+            .fc-event-title,
+            .fc-event-time {
+              font-weight: 500;
+              padding: 2px 4px;
             }
             .fc-toolbar-title {
               color: #F3F4F6;
             }
             .fc-view {
-              background: #1F2937;
+              background: #131314;
               border-radius: 8px;
               overflow: hidden;
+            }
+            .fc-timegrid-event-harness {
+              margin: 0 1px;
+            }
+            .fc-timegrid-event {
+              border-radius: 4px !important;
+              border: none !important;
+              padding: 2px 4px;
+            }
+            .fc-timegrid-event .fc-event-time {
+              font-size: 12px;
+              font-weight: 500;
+              opacity: 0.9;
+            }
+            .fc-timegrid-event .fc-event-title {
+              font-size: 12px;
+              font-weight: 400;
+            }
+            .fc-timegrid-slot-label {
+              color: #9CA3AF;
+            }
+            .fc-col-header-cell {
+              background-color: rgba(75, 85, 99, 0.2);
+            }
+            .fc-scrollgrid {
+              border-radius: 8px;
+            }
+            .fc-day-disabled {
+              background-color: rgba(75, 85, 99, 0.1);
             }
           `}</style>
           <FullCalendar
@@ -201,6 +347,27 @@ const GoogleCalendarView = () => {
             nowIndicator={true}
             slotMinTime="00:00:00"
             slotMaxTime="23:59:00"
+            eventClick={(info) => {
+              setSelectedEvent(info.event);
+            }}
+            eventContent={(eventInfo) => {
+              return (
+                <>
+                  <div className="fc-event-time" style={{ color: eventInfo.event.textColor }}>
+                    {eventInfo.timeText}
+                  </div>
+                  <div className="fc-event-title" style={{ color: eventInfo.event.textColor }}>
+                    {eventInfo.event.title}
+                  </div>
+                </>
+              );
+            }}
+            eventDidMount={(info) => {
+              // Add hover effect and set background color
+              info.el.style.transition = 'filter 0.2s ease';
+              info.el.style.backgroundColor = info.event.backgroundColor;
+              info.el.style.borderColor = info.event.borderColor;
+            }}
           />
         </div>
       </div>

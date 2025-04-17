@@ -49,29 +49,47 @@ const TaskView = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTasks();
-  }, [viewMode]);
-
-  // Initialize gamification data from localStorage
-  useEffect(() => {
+  const fetchGamificationData = async () => {
     try {
-      const savedData = localStorage.getItem('taskGameData');
-      if (savedData) {
-        const data = JSON.parse(savedData);
-        setStreak(data.streak || 0);
-        setLastCompletedDate(data.lastCompletedDate || null);
-        setExperience(data.experience || 0);
-        setLevel(data.level || 1);
-        setAchievements(data.achievements || achievements);
-      }
-    } catch (error) {
-      console.error('Error loading game data:', error);
-    }
-  }, []);
+      const response = await fetch('/api/gamification');
+      const data = await response.json();
 
-  // Save gamification data to localStorage
-  useEffect(() => {
+      if (!response.ok) {
+        // If we get a specific error about multiple rows, try cleaning up
+        if (data.error && data.error.includes('multiple')) {
+          console.log('Detected multiple rows, attempting cleanup...');
+          const cleanupResponse = await fetch('/api/gamification/cleanup');
+          if (!cleanupResponse.ok) {
+            throw new Error('Cleanup failed');
+          }
+          // Retry the original fetch after cleanup
+          const retryResponse = await fetch('/api/gamification');
+          const retryData = await retryResponse.json();
+          if (!retryResponse.ok) {
+            throw new Error(retryData.error || 'Failed to fetch after cleanup');
+          }
+          // Use the retry data
+          setStreak(retryData.streak || 0);
+          setLastCompletedDate(retryData.lastCompletedDate || null);
+          setExperience(retryData.experience || 0);
+          setLevel(retryData.level || 1);
+          setAchievements(retryData.achievements || achievements);
+          return;
+        }
+        throw new Error(data.error || 'Failed to fetch gamification data');
+      }
+
+      setStreak(data.streak || 0);
+      setLastCompletedDate(data.lastCompletedDate || null);
+      setExperience(data.experience || 0);
+      setLevel(data.level || 1);
+      setAchievements(data.achievements || achievements);
+    } catch (error) {
+      console.error('Error loading gamification data:', error);
+    }
+  };
+
+  const updateGamificationData = async () => {
     try {
       const gameData = {
         streak,
@@ -80,10 +98,53 @@ const TaskView = () => {
         level,
         achievements,
       };
-      localStorage.setItem('taskGameData', JSON.stringify(gameData));
+
+      console.log('Sending update with data:', gameData);
+
+      const response = await fetch('/api/gamification/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gameData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // If we get an error about no rows, try fetching first
+        if (data.error && data.error.includes('no rows')) {
+          console.log('No existing record, fetching first...');
+          await fetchGamificationData();
+          // Retry the update
+          const retryResponse = await fetch('/api/gamification/update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(gameData),
+          });
+          if (!retryResponse.ok) {
+            throw new Error('Update retry failed');
+          }
+          return;
+        }
+        throw new Error(data.error || 'Failed to update gamification data');
+      }
+
+      console.log('Gamification update successful');
     } catch (error) {
-      console.error('Error saving game data:', error);
+      console.error('Error updating gamification data:', error);
     }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchGamificationData();
+  }, [viewMode]);
+
+  useEffect(() => {
+    updateGamificationData();
   }, [streak, lastCompletedDate, experience, level, achievements]);
 
   // Calculate level based on experience

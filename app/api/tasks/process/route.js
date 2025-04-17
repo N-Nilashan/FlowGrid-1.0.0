@@ -99,42 +99,31 @@ export async function GET(req) {
     console.log(`Found ${events.length} calendar events`);
 
     // Process events into tasks
-    const tasks = events.map(event => {
-      // Ensure timestamps are valid
-      const startTime = event.start?.dateTime || event.start?.date || startOfToday.toISOString();
-      const endTime = event.end?.dateTime || event.end?.date || startOfToday.toISOString();
+    const processedTasks = events.map(event => ({
+      id: event.id,
+      title: event.summary || 'Untitled',
+      description: event.description || '',
+      start: event.start.dateTime || event.start.date,
+      end: event.end.dateTime || event.end.date,
+      category: determineCategory(event),
+      priority: determinePriority(event),
+      completed: existingTasksMap.get(event.id) || false,
+      user_id: session.user.email,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
 
-      return {
-        id: event.id || crypto.randomUUID(),
-        title: event.summary || 'Untitled Event',
-        start: new Date(startTime).toISOString(),
-        end: new Date(endTime).toISOString(),
-        description: event.description || null,
-        priority: determinePriority(event),
-        category: determineCategory(event),
-        user_id: session.user.email,
-        // Preserve completion status if task exists, otherwise set to false
-        completed: existingTasksMap.has(event.id) ? existingTasksMap.get(event.id) : false,
-        created_at: new Date().toISOString()
-      };
-    });
+    console.log('Upserting tasks to Supabase...');
+    const { error } = await supabaseAdmin
+      .from('tasks')
+      .upsert(processedTasks, {
+        onConflict: 'id',
+        ignoreDuplicates: false
+      });
 
-    console.log(`Processing ${tasks.length} tasks...`);
-
-    // Store tasks in Supabase using admin client
-    if (tasks.length > 0) {
-      console.log('Upserting tasks to Supabase...');
-      const { error: upsertError } = await supabaseAdmin
-        .from('tasks')
-        .upsert(tasks, {
-          onConflict: 'id',
-          ignoreDuplicates: false
-        });
-
-      if (upsertError) {
-        console.error('Supabase upsert error:', upsertError);
-        throw new Error('Failed to store tasks: ' + upsertError.message);
-      }
+    if (error) {
+      console.error('Supabase upsert error:', error);
+      throw new Error(`Failed to store tasks: ${error.message}`);
     }
 
     // Get the view mode from query parameter (default to 'today')

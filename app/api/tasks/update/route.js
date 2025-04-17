@@ -18,11 +18,37 @@ export async function POST(req) {
       });
     }
 
-    const { taskId, completed, category } = await req.json();
+    const { taskId, completed, category, gamificationData } = await req.json();
 
-    if (!taskId) {
-      return new Response(JSON.stringify({ error: 'Task ID is required' }), {
+    if (!taskId && !gamificationData) {
+      return new Response(JSON.stringify({ error: 'Task ID or gamification data is required' }), {
         status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Handle gamification data update
+    if (gamificationData) {
+      const { streak, lastCompletedDate, experience, level, achievements } = gamificationData;
+
+      const { error: upsertError } = await supabaseAdmin
+        .from('gamification')
+        .upsert({
+          user_id: session.user.email,
+          streak,
+          lastCompletedDate,
+          experience,
+          level,
+          achievements
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (upsertError) {
+        throw upsertError;
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json' },
       });
     }

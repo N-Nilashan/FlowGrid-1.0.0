@@ -50,7 +50,7 @@ export async function GET(request) {
     return new Response(null, {
       status: 302,
       headers: {
-        Location: '/dashboard?tab=Google Calendar&connected=true'
+        Location: '/flow?tab=Google Calendar&connected=true'
       }
     });
   } catch (error) {

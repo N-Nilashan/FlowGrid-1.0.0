@@ -83,7 +83,7 @@ export default function Home() {
                 <div className="w-3 h-3 rounded-full bg-red-500 mr-2 shadow-sm shadow-red-500/50"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2 shadow-sm shadow-yellow-500/50"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm shadow-green-500/50"></div>
-                <div className="ml-4 text-xs text-gray-300 font-mono">StudyFlow Dashboard</div>
+                <div className="ml-4 text-xs text-gray-300 font-mono">FlowGrid Dashboard</div>
               </div>
               <div className="pt-8 text-center">
                 <div className="w-32 h-32 mx-auto rounded-full border-2 border-purple-500/30 animate-pulse flex items-center justify-center mb-4">

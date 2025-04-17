@@ -1,17 +1,16 @@
 'use client'
 import { signIn, signOut, useSession } from 'next-auth/react';
-import Image from 'next/image';
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation';
 
 const Page = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
-  // Redirect to dashboard when session is available
+  // Redirect to flow when session is available
   useEffect(() => {
     if (session) {
-      router.push('/dashboard');
+      router.push('/flow');
     }
   }, [session, router]);
 
@@ -25,7 +24,7 @@ const Page = () => {
                 <div className="flex items-center space-x-4">
                   {session.user?.image && (
                     <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500 shadow-lg shadow-purple-500/20">
-                      <img src={session.user?.image} alt="User Image" className="w-10 h-10 rounded-full" />
+                      <img src={session.user?.image} alt="User Image" className="w-10 h-10 object-cover" />
                     </div>
                   )}
                   <div>
@@ -56,7 +55,7 @@ const Page = () => {
               <p className="text-gray-400 text-center mb-8">Sign in to access your account</p>
 
               <button
-                onClick={() => signIn("google", { callbackUrl: '/dashboard' })}
+                onClick={() => signIn("google", { callbackUrl: '/flow' })}
                 className="w-full bg-gray-900 hover:bg-gray-950 text-white rounded-lg py-3 px-4 flex items-center justify-center gap-3 transition-all duration-300 border border-gray-700 hover:border-purple-500 group shadow-lg hover:shadow-purple-500/20"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">

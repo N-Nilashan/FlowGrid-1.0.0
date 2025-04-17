@@ -31,6 +31,18 @@ export async function GET(request) {
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   try {
+    // First, get the calendar list to get calendar-specific colors
+    const calendarList = await calendar.calendarList.list();
+    const calendars = new Map(
+      calendarList.data.items.map(cal => [cal.id, {
+        backgroundColor: cal.backgroundColor,
+        foregroundColor: cal.foregroundColor
+      }])
+    );
+
+    // Get the color definitions from Google Calendar
+    const { data: { event: eventColors } } = await calendar.colors.get();
+
     // Get events starting from current date's 12 am
     const now = new Date();
     now.setHours(0, 0, 0, 0); // Set to start of day
@@ -45,14 +57,42 @@ export async function GET(request) {
       orderBy: 'startTime',
     });
 
-    const events = response.data.items.map(event => ({
-      id: event.id,
-      title: event.summary,
-      start: event.start.dateTime || event.start.date,
-      end: event.end.dateTime || event.end.date,
-      description: event.description,
-      color: '#7C3AED', // Using our theme color
-    }));
+    const events = response.data.items.map(event => {
+      let backgroundColor;
+      let textColor = '#FFFFFF';
+
+      // First try to get event-specific color
+      if (event.colorId && eventColors[event.colorId]) {
+        backgroundColor = eventColors[event.colorId].background;
+        textColor = eventColors[event.colorId].foreground;
+      }
+      // Then try to get color from the calendar
+      else if (event.organizer?.email && calendars.has(event.organizer.email)) {
+        const calendarColors = calendars.get(event.organizer.email);
+        backgroundColor = calendarColors.backgroundColor;
+        textColor = calendarColors.foregroundColor;
+      }
+      // Finally fallback to default purple
+      else {
+        backgroundColor = '#7C3AED';
+        textColor = '#FFFFFF';
+      }
+
+      return {
+        id: event.id,
+        title: event.summary || 'Untitled Event',
+        start: event.start?.dateTime || event.start?.date,
+        end: event.end?.dateTime || event.end?.date,
+        description: event.description,
+        backgroundColor,
+        textColor,
+        borderColor: backgroundColor,
+        // Add additional event properties
+        allDay: !event.start?.dateTime,
+        location: event.location,
+        calendarId: event.organizer?.email
+      };
+    });
 
     return new Response(JSON.stringify(events), {
       status: 200,

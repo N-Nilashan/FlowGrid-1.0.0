@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Description: General Guidelines globs:
+
+#General Coding guidelines
+- Do not use typescript files
+- Always provide concise comments explaining the logic 
+- Prioritize readability and maintainability.
+- Use clear, descriptive names.
