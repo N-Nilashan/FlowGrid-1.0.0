@@ -12,7 +12,7 @@ export async function POST() {
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
+      `${process.env.NEXTAUTH_URL}/api/calendar/callback`  // Make sure this matches exactly what's configured in Google Console
     );
 
     const scopes = [
@@ -25,7 +25,8 @@ export async function POST() {
       access_type: 'offline',      // Get refresh token
       scope: scopes,
       prompt: 'consent',           // Force consent screen
-      include_granted_scopes: true // Include previously granted scopes
+      include_granted_scopes: true, // Include previously granted scopes
+      state: session.user.email    // Add state for security
     });
 
     return NextResponse.json({ authUrl });
