@@ -444,31 +444,33 @@ const TaskView = () => {
     };
 
     return (
-      <div
-        className={`flex items-center space-x-4 p-4 bg-gray-800 rounded-lg mb-3 border border-purple-500/10 hover:border-purple-500/30 transition-all duration-500 ease-in-out cursor-pointer transform ${completedTasks.has(task.id)
-          ? 'opacity-75 scale-98 translate-y-2'
-          : 'opacity-100 scale-100 translate-y-0'
-          }`}
-      >
+      <div className={`flex items-start sm:items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-800 rounded-lg mb-3 border border-purple-500/10 hover:border-purple-500/30 transition-all duration-500 ease-in-out cursor-pointer transform ${completedTasks.has(task.id)
+        ? 'opacity-75 scale-98 translate-y-2'
+        : 'opacity-100 scale-100 translate-y-0'
+        }`}>
         <input
           type="checkbox"
           checked={completedTasks.has(task.id)}
           onChange={() => handleTaskCompletion(task.id)}
-          className="w-5 h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-gray-700 cursor-pointer transition-all duration-300"
+          className="mt-1 sm:mt-0 w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-gray-700 cursor-pointer transition-all duration-300"
         />
-        <div className="flex-1 transition-all duration-500 ease-in-out">
-          <div className="flex items-center justify-between">
-            <h3 className={`text-base font-medium transition-all duration-500 ease-in-out transform ${completedTasks.has(task.id)
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <h3 className={`text-sm sm:text-base font-medium break-words transition-all duration-500 ease-in-out transform ${completedTasks.has(task.id)
               ? 'text-gray-500 line-through translate-x-2'
               : 'text-white translate-x-0'
               }`}>
               {task.title}
             </h3>
-            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium border ${getDurationColor()}`}>
-              {durationText}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getDurationColor()}`}>
+                {durationText}
+              </span>
+              <div className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${getPriorityColor(task.priority)} ${completedTasks.has(task.id) ? 'opacity-50 scale-90' : 'opacity-100 scale-100'
+                }`} />
+            </div>
           </div>
-          <p className={`text-sm transition-all duration-500 ease-in-out ${completedTasks.has(task.id) ? 'text-gray-500' : 'text-gray-400'
+          <p className={`text-xs sm:text-sm mt-1 transition-all duration-500 ease-in-out ${completedTasks.has(task.id) ? 'text-gray-500' : 'text-gray-400'
             }`}>
             {new Date(task.start).toLocaleString('en-US', {
               weekday: 'short',
@@ -480,26 +482,20 @@ const TaskView = () => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <div className={`w-3 h-3 rounded-full transition-all duration-500 ${getPriorityColor(task.priority)} ${completedTasks.has(task.id) ? 'opacity-50 scale-90' : 'opacity-100 scale-100'
-            }`} />
-
-          {/* Recategorize button for uncategorized tasks */}
-          {category === 'uncategorized' && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setRecategorizeTask(task);
-              }}
-              className="p-1 rounded-full bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
-              title="Categorize this task"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-            </button>
-          )}
-        </div>
+        {category === 'uncategorized' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setRecategorizeTask(task);
+            }}
+            className="p-1.5 rounded-full bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+            title="Categorize this task"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          </button>
+        )}
       </div>
     );
   };
@@ -957,16 +953,16 @@ const TaskView = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-900 rounded-xl shadow-2xl">
+    <div className="p-3 sm:p-6 bg-gray-900 rounded-xl shadow-2xl min-h-screen sm:min-h-0">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">Task List</h1>
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400">Your calendar events, intelligently categorized</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Task List</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p className="text-sm sm:text-base text-gray-400">Your calendar events, intelligently categorized</p>
           <div className="flex space-x-2">
             <button
               onClick={() => setViewMode('today')}
-              className={`px-4 py-2 rounded-lg text-sm transition-all duration-200 ${viewMode === 'today'
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm transition-all duration-200 ${viewMode === 'today'
                 ? 'bg-purple-600 text-white'
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
@@ -975,7 +971,7 @@ const TaskView = () => {
             </button>
             <button
               onClick={() => setViewMode('weekly')}
-              className={`px-4 py-2 rounded-lg text-sm transition-all duration-200 ${viewMode === 'weekly'
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm transition-all duration-200 ${viewMode === 'weekly'
                 ? 'bg-purple-600 text-white'
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
@@ -995,74 +991,25 @@ const TaskView = () => {
       {/* Category Filter */}
       <CategoryFilter />
 
-      {/* Achievements Panel */}
-      <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20 mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="text-lg font-semibold text-white">Achievements</h3>
-          <span className="text-sm text-gray-400">{achievements.filter(a => a.completed).length}/{achievements.length} Unlocked</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-          {achievements.map(achievement => (
-            <div
-              key={achievement.id}
-              className={`p-3 rounded-lg border ${achievement.completed
-                ? 'border-yellow-500/50 bg-yellow-500/10'
-                : 'border-gray-700 bg-gray-800/50 opacity-60'}`}
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className="text-2xl mb-2">{achievement.icon}</div>
-                <h4 className={`text-sm font-medium mb-1 ${achievement.completed ? 'text-yellow-400' : 'text-gray-400'}`}>
-                  {achievement.title}
-                </h4>
-                <p className="text-xs text-gray-500">{achievement.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Stats Overview */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
-          <h3 className="text-gray-400 text-sm mb-1">Total Tasks</h3>
-          <p className="text-2xl font-bold text-white">
-            {filterTasksByDate([...tasks.studies, ...tasks.work, ...tasks.health, ...tasks.personal, ...tasks.uncategorized], viewMode).length}
-          </p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
-          <h3 className="text-gray-400 text-sm mb-1">Study Tasks</h3>
-          <p className="text-2xl font-bold text-white">
-            {filterTasksByDate(tasks.studies, viewMode).length}
-          </p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
-          <h3 className="text-gray-400 text-sm mb-1">Work Tasks</h3>
-          <p className="text-2xl font-bold text-white">
-            {filterTasksByDate(tasks.work, viewMode).length}
-          </p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
-          <h3 className="text-gray-400 text-sm mb-1">Health Tasks</h3>
-          <p className="text-2xl font-bold text-white">
-            {filterTasksByDate(tasks.health, viewMode).length}
-          </p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
-          <h3 className="text-gray-400 text-sm mb-1">Personal Tasks</h3>
-          <p className="text-2xl font-bold text-white">
-            {filterTasksByDate(tasks.personal, viewMode).length}
-          </p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20">
-          <h3 className="text-gray-400 text-sm mb-1">Uncategorized Tasks</h3>
-          <p className="text-2xl font-bold text-white">
-            {filterTasksByDate(tasks.uncategorized, viewMode).length}
-          </p>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        {[
+          { title: 'Total Tasks', data: filterTasksByDate([...tasks.studies, ...tasks.work, ...tasks.health, ...tasks.personal, ...tasks.uncategorized], viewMode).length },
+          { title: 'Study Tasks', data: filterTasksByDate(tasks.studies, viewMode).length },
+          { title: 'Work Tasks', data: filterTasksByDate(tasks.work, viewMode).length },
+          { title: 'Health Tasks', data: filterTasksByDate(tasks.health, viewMode).length },
+          { title: 'Personal', data: filterTasksByDate(tasks.personal, viewMode).length },
+          { title: 'Other', data: filterTasksByDate(tasks.uncategorized, viewMode).length }
+        ].map(({ title, data }) => (
+          <div key={title} className="bg-gray-800 p-3 sm:p-4 rounded-lg border border-purple-500/20">
+            <h3 className="text-xs sm:text-sm text-gray-400 mb-1">{title}</h3>
+            <p className="text-lg sm:text-2xl font-bold text-white">{data}</p>
+          </div>
+        ))}
       </div>
 
       {/* Task Groups */}
-      <div>
+      <div className="space-y-6 sm:space-y-8">
         {getFilteredCategories().map(category => {
           const title = category.charAt(0).toUpperCase() + category.slice(1);
           return <TaskGroup key={category} title={title} tasks={tasks[category]} />;
@@ -1070,10 +1017,66 @@ const TaskView = () => {
       </div>
 
       {/* Recategorize Modal */}
-      <RecategorizeModal />
+      {recategorizeTask && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 shadow-xl max-w-md w-full border border-purple-500/20">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Categorize Task</h3>
+            <p className="text-sm sm:text-base text-gray-300 mb-6">{recategorizeTask.title}</p>
 
-      {/* Replace the separate notification components with the consolidated container */}
-      <NotificationsContainer />
+            <div className="space-y-3 mb-6">
+              {['studies', 'work', 'health', 'personal'].map(category => {
+                const { icon, color, textColor } = getCategoryStyle(category);
+                return (
+                  <button
+                    key={category}
+                    onClick={() => handleRecategorize(recategorizeTask.id, category)}
+                    className={`flex items-center w-full p-3 rounded-lg ${color} ${textColor} hover:opacity-90 transition-opacity`}
+                  >
+                    {icon}
+                    <span className="capitalize">{category}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setRecategorizeTask(null)}
+                className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notifications */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 space-y-3">
+        {showAchievement && (
+          <div className="bg-gray-800 rounded-lg p-3 sm:p-4 shadow-xl border border-yellow-500 animate-bounce max-w-[90vw] sm:max-w-md">
+            <div className="flex items-center">
+              <div className="text-2xl sm:text-3xl mr-3">{showAchievement.icon}</div>
+              <div>
+                <h4 className="text-yellow-400 font-bold text-sm sm:text-base">{showAchievement.title}</h4>
+                <p className="text-gray-300 text-xs sm:text-sm">{showAchievement.description}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showLevelUp && (
+          <div className="bg-gray-800 rounded-lg p-3 sm:p-4 shadow-xl border border-purple-500 max-w-[90vw] sm:max-w-md">
+            <div className="flex items-center">
+              <div className="text-2xl sm:text-3xl mr-3">🎮</div>
+              <div>
+                <h4 className="text-purple-400 font-bold text-sm sm:text-base">Level Up!</h4>
+                <p className="text-gray-300 text-xs sm:text-sm">You reached level {level}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -86,7 +86,7 @@ export default function Home() {
                 <div className="ml-4 text-xs text-gray-300 font-mono">FlowGrid Dashboard</div>
               </div>
               <div className="pt-8 text-center">
-              <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-full object-cover rounded-lg" />
+              <img src="/demo`.png" alt="FlowGrid Dashboard" className="w-full h-full object-cover rounded-lg" />
               </div>
               <div className="absolute bottom-4 left-4 right-4 h-16 bg-gradient-to-r from-purple-900/20 to-fuchsia-900/20 rounded border border-gray-800 flex items-center px-4">
                 <div className="w-3 h-3 rounded-full bg-purple-500 mr-2 animate-pulse"></div>

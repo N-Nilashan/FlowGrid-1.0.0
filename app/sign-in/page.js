@@ -2,6 +2,7 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Page = () => {
   const { data: session } = useSession();
@@ -83,10 +84,12 @@ const Page = () => {
                 <span className="text-sm font-medium">Continue with Google</span>
               </button>
 
-              <div className="mt-6 text-xs text-gray-500 text-center">
+              <div className="mt-6 text-center text-sm text-gray-400">
                 By signing in, you agree to our
                 <br />
-                <a href="#" className="text-purple-400 hover:text-purple-300">Terms of Service</a> and <a href="#" className="text-purple-400 hover:text-purple-300">Privacy Policy</a>
+                <Link href="/terms" className="text-purple-400 hover:text-purple-300 transition-colors">Terms of Service</Link>
+                {' '}and{' '}
+                <Link href="/privacy" className="text-purple-400 hover:text-purple-300 transition-colors">Privacy Policy</Link>
               </div>
             </div>
           </div>
