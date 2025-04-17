@@ -16,16 +16,16 @@ export async function GET(request) {
   }
 
   const cookieStore = cookies();
-  const accessToken = cookieStore.get('calendar_access_token');
-  const refreshToken = cookieStore.get('calendar_refresh_token');
+  const accessToken = cookieStore.get('calendar_access_token')?.value;
+  const refreshToken = cookieStore.get('calendar_refresh_token')?.value;
 
   if (!accessToken) {
     return new Response('No access token', { status: 401 });
   }
 
   oauth2Client.setCredentials({
-    access_token: accessToken.value,
-    refresh_token: refreshToken?.value,
+    access_token: accessToken,
+    refresh_token: refreshToken,
   });
 
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });

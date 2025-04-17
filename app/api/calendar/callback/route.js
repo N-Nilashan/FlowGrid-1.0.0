@@ -30,7 +30,7 @@ export async function GET(request) {
 
     // Store tokens securely in cookies
     const cookieStore = cookies();
-    cookieStore.set('calendar_access_token', tokens.access_token, {
+    await cookieStore.set('calendar_access_token', tokens.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -38,7 +38,7 @@ export async function GET(request) {
     });
 
     if (tokens.refresh_token) {
-      cookieStore.set('calendar_refresh_token', tokens.refresh_token, {
+      await cookieStore.set('calendar_refresh_token', tokens.refresh_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

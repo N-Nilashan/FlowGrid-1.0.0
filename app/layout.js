@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "StudyFlow: Turn your google calendar into todo list",
-  description: "An AI powered tool that turns your google calendar into a todo list and helps you study smarter!",
+  title: "FlowGrid: Turn your google calendar into todo list",
+  description: "An AI powered tool that turns your google calendar into a todo list and saves you time!",
 };
 
 export default function RootLayout({ children }) {
