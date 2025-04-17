@@ -1,72 +1,60 @@
-import { getServerSession } from 'next-auth/next';
-import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { createClient } from '@supabase/supabase-js';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
+import { cookies } from 'next/headers';
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  `${process.env.NEXTAUTH_URL}/api/calendar/callback`
+);
 
 export async function GET(request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const searchParams = request.nextUrl.searchParams;
+  const code = searchParams.get('code');
+  const state = searchParams.get('state');
+
+  // Verify state matches user email
+  if (state !== session.user.email) {
+    return new Response('Invalid state', { status: 400 });
+  }
+
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return NextResponse.redirect(new URL('/?error=unauthorized', request.url));
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+
+    // Store tokens securely in cookies
+    const cookieStore = cookies();
+    await cookieStore.set('calendar_access_token', tokens.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 3600 // 1 hour
+    });
+
+    if (tokens.refresh_token) {
+      await cookieStore.set('calendar_refresh_token', tokens.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 // 30 days
+      });
     }
 
-    // Get the code and potential error from the URL
-    const searchParams = request.nextUrl.searchParams;
-    const code = searchParams.get('code');
-    const error = searchParams.get('error');
-
-    // Handle OAuth errors
-    if (error) {
-      console.error('OAuth error:', error);
-      return NextResponse.redirect(new URL('/flow?error=oauth_' + error, request.url));
-    }
-
-    if (!code) {
-      console.error('No authorization code received');
-      return NextResponse.redirect(new URL('/flow?error=no_code', request.url));
-    }
-
-    // Initialize OAuth client
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      `${process.env.NEXTAUTH_URL}/api/calendar/callback`  // Make sure this matches exactly what's configured in Google Console
-    );
-
-    try {
-      // Exchange code for tokens
-      const { tokens } = await oauth2Client.getToken(code);
-
-      // Initialize Supabase client
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_KEY
-      );
-
-      // Store tokens in database
-      const { error: dbError } = await supabase
-        .from('user_calendar_tokens')
-        .upsert({
-          user_id: session.user.id,
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token,
-          expiry_date: tokens.expiry_date,
-          created_at: new Date().toISOString()
-        });
-
-      if (dbError) {
-        console.error('Database error:', dbError);
-        throw new Error('Failed to store tokens');
+    // Redirect back to the calendar page
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: '/flow?tab=Google Calendar&connected=true'
       }
-
-      // Successful connection
-      return NextResponse.redirect(new URL('/flow?calendar=connected', request.url));
-    } catch (tokenError) {
-      console.error('Token exchange error:', tokenError);
-      return NextResponse.redirect(new URL('/flow?error=token_exchange', request.url));
-    }
+    });
   } catch (error) {
-    console.error('Calendar callback error:', error);
-    return NextResponse.redirect(new URL('/flow?error=callback_failed', request.url));
+    console.error('Error getting tokens:', error);
+    return new Response('Error getting tokens', { status: 500 });
   }
 }

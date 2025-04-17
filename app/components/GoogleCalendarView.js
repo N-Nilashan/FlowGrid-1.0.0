@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -13,33 +13,25 @@ const GoogleCalendarView = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const calendarRef = useRef(null);
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await fetch('/api/calendar/events');
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch calendar events');
-      }
-
-      const data = await response.json();
-      setEvents(data);
-    } catch (err) {
-      console.error('Error fetching events:', err);
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/calendar/events');
+        if (!response.ok) {
+          throw new Error('Failed to fetch calendar events');
+        }
+        const data = await response.json();
+        setEvents(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchEvents();
-    // Set up periodic refresh every 5 minutes
-    const refreshInterval = setInterval(fetchEvents, 5 * 60 * 1000);
-    return () => clearInterval(refreshInterval);
-  }, [fetchEvents]);
+  }, []);
 
   // Function to change calendar view
   const changeView = (newView) => {
@@ -49,29 +41,6 @@ const GoogleCalendarView = () => {
       setView(newView);
     }
   };
-
-  if (error) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-red-500/20">
-          <div className="p-8">
-            <div className="flex flex-col items-center justify-center space-y-6">
-              <div className="text-center">
-                <h3 className="text-xl font-semibold text-white mb-4">Error Loading Calendar</h3>
-                <p className="text-red-400 mb-6">{error}</p>
-                <button
-                  onClick={fetchEvents}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  Try Again
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -83,17 +52,35 @@ const GoogleCalendarView = () => {
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg className="w-8 h-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
               </div>
               <div className="text-center">
-                <h3 className="text-xl font-semibold text-white mb-2">Loading Your Calendar</h3>
-                <p className="text-gray-400">
-                  Fetching your latest events...
+                <h3 className="text-xl font-semibold text-white mb-2">Fetching Your Calendar Events</h3>
+                <p className="text-gray-400 max-w-md">
+                  Please wait while we sync your latest calendar events...
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-red-500/20">
+          <div className="p-8 text-center">
+            <div className="text-red-400 mb-4">Error: {error}</div>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </div>
@@ -376,6 +363,7 @@ const GoogleCalendarView = () => {
               );
             }}
             eventDidMount={(info) => {
+              // Add hover effect and set background color
               info.el.style.transition = 'filter 0.2s ease';
               info.el.style.backgroundColor = info.event.backgroundColor;
               info.el.style.borderColor = info.event.borderColor;

@@ -1,50 +1,51 @@
-import { getServerSession } from 'next-auth/next';
-import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { createClient } from '@supabase/supabase-js';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../lib/authOptions';
+import { cookies } from 'next/headers';
 
-export async function GET() {
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  `${process.env.NEXTAUTH_URL}/api/calendar/callback`
+);
+
+export async function GET(request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const cookieStore = cookies();
+  const accessToken = cookieStore.get('calendar_access_token')?.value;
+  const refreshToken = cookieStore.get('calendar_refresh_token')?.value;
+
+  if (!accessToken) {
+    return new Response('No access token', { status: 401 });
+  }
+
+  oauth2Client.setCredentials({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
+
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Initialize Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_KEY
+    // First, get the calendar list to get calendar-specific colors
+    const calendarList = await calendar.calendarList.list();
+    const calendars = new Map(
+      calendarList.data.items.map(cal => [cal.id, {
+        backgroundColor: cal.backgroundColor,
+        foregroundColor: cal.foregroundColor
+      }])
     );
 
-    // Get user's tokens
-    const { data: tokens, error: tokenError } = await supabase
-      .from('user_calendar_tokens')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .single();
+    // Get the color definitions from Google Calendar
+    const { data: { event: eventColors } } = await calendar.colors.get();
 
-    if (tokenError || !tokens) {
-      return NextResponse.json({ error: 'Calendar not connected' }, { status: 404 });
-    }
-
-    // Initialize OAuth client
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      `${process.env.NEXTAUTH_URL}/api/calendar/callback`
-    );
-
-    oauth2Client.setCredentials({
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
-      expiry_date: tokens.expiry_date
-    });
-
-    // Create Calendar API client
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-
-    // Get events for the next 30 days
+    // Get events starting from current date's 12 am
     const now = new Date();
+    now.setHours(0, 0, 0, 0); // Set to start of day
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(now.getDate() + 30);
 
@@ -56,45 +57,49 @@ export async function GET() {
       orderBy: 'startTime',
     });
 
-    // Transform events to match FullCalendar format
-    const events = response.data.items.map(event => ({
-      id: event.id,
-      title: event.summary,
-      start: event.start.dateTime || event.start.date,
-      end: event.end.dateTime || event.end.date,
-      allDay: !event.start.dateTime,
-      description: event.description,
-      location: event.location,
-      backgroundColor: '#7C3AED', // Purple color
-      borderColor: '#6D28D9',
-      textColor: '#ffffff'
-    }));
+    const events = response.data.items.map(event => {
+      let backgroundColor;
+      let textColor = '#FFFFFF';
 
-    // If token was refreshed, update it in the database
-    const tokens_updated = oauth2Client.credentials;
-    if (tokens_updated.access_token !== tokens.access_token) {
-      await supabase
-        .from('user_calendar_tokens')
-        .update({
-          access_token: tokens_updated.access_token,
-          expiry_date: tokens_updated.expiry_date,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', session.user.id);
-    }
+      // First try to get event-specific color
+      if (event.colorId && eventColors[event.colorId]) {
+        backgroundColor = eventColors[event.colorId].background;
+        textColor = eventColors[event.colorId].foreground;
+      }
+      // Then try to get color from the calendar
+      else if (event.organizer?.email && calendars.has(event.organizer.email)) {
+        const calendarColors = calendars.get(event.organizer.email);
+        backgroundColor = calendarColors.backgroundColor;
+        textColor = calendarColors.foregroundColor;
+      }
+      // Finally fallback to default purple
+      else {
+        backgroundColor = '#7C3AED';
+        textColor = '#FFFFFF';
+      }
 
-    return NextResponse.json(events);
+      return {
+        id: event.id,
+        title: event.summary || 'Untitled Event',
+        start: event.start?.dateTime || event.start?.date,
+        end: event.end?.dateTime || event.end?.date,
+        description: event.description,
+        backgroundColor,
+        textColor,
+        borderColor: backgroundColor,
+        // Add additional event properties
+        allDay: !event.start?.dateTime,
+        location: event.location,
+        calendarId: event.organizer?.email
+      };
+    });
+
+    return new Response(JSON.stringify(events), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
-    console.error('Error fetching calendar events:', error);
-
-    // Check if error is due to invalid token
-    if (error.code === 401) {
-      return NextResponse.json({ error: 'Token expired' }, { status: 401 });
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to fetch calendar events' },
-      { status: 500 }
-    );
+    console.error('Error fetching events:', error);
+    return new Response('Error fetching events', { status: 500 });
   }
 }
