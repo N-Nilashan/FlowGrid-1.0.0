@@ -19,7 +19,7 @@ export default function Home() {
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500 text-2xl font-bold tracking-tighter">
-                  StudyFlow
+                  FlowGrid
                 </span>
               </div>
               <div className="hidden md:ml-10 md:flex md:space-x-8">
@@ -54,11 +54,11 @@ export default function Home() {
                 <h1 className="text-4xl font-extrabold tracking-tight text-gray-100 sm:text-5xl md:text-6xl">
                   <span className="block mb-1">Transform your</span>
                   <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500">
-                    academic workflow
+                    busy workflow
                   </span>
                 </h1>
                 <p className="mt-6 text-xl text-gray-300">
-                  StudyFlow helps you organize your academic life and boost productivity by 30% through AI-powered task management, deadline tracking, and smart calendar integration.
+                FlowGrid helps you organize your academic life and boost productivity by 30% through AI-powered task management, deadline tracking, and smart calendar integration.
                 </p>
                 <div className="mt-8 sm:flex space-x-4">
                   <div className="rounded-md shadow-lg shadow-purple-500/20">
@@ -86,14 +86,7 @@ export default function Home() {
                 <div className="ml-4 text-xs text-gray-300 font-mono">FlowGrid Dashboard</div>
               </div>
               <div className="pt-8 text-center">
-                <div className="w-32 h-32 mx-auto rounded-full border-2 border-purple-500/30 animate-pulse flex items-center justify-center mb-4">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-600/20 to-fuchsia-600/20 border border-purple-500/10 flex items-center justify-center">
-                    <svg className="w-12 h-12 text-purple-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-                <p className="text-gray-500 font-mono text-sm">[Dashboard Preview]</p>
+              <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-full object-cover rounded-lg" />
               </div>
               <div className="absolute bottom-4 left-4 right-4 h-16 bg-gradient-to-r from-purple-900/20 to-fuchsia-900/20 rounded border border-gray-800 flex items-center px-4">
                 <div className="w-3 h-3 rounded-full bg-purple-500 mr-2 animate-pulse"></div>
@@ -198,7 +191,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-gray-100 sm:text-4xl">
-              See StudyFlow in action
+              See FlowGrid in action
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-400 sm:mt-4">
               Watch how our app transforms student productivity
@@ -310,7 +303,10 @@ export default function Home() {
             </a>
           </div>
           <p className="mt-8 text-center text-base text-gray-500">
-            &copy; 2025 StudyFlow. All rights reserved.
+            &copy; 2025 FlowGrid. All rights reserved.
+          </p>
+          <p className="mt-8 text-center text-base text-gray-500">
+            Made with ❤️ by <a href="https://x.com/N_Nilashan" className="text-purple-400 hover:text-fuchsia-400 transition-colors duration-300">Nimesh Nilashan</a>
           </p>
         </div>
       </footer>
