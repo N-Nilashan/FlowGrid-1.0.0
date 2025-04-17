@@ -6,13 +6,13 @@ import { createClient } from '@supabase/supabase-js';
 export async function GET(request) {
   try {
     const session = await getServerSession();
-    if (!session) {
+  if (!session) {
       return NextResponse.redirect('/');
-    }
+  }
 
     // Get the code from the URL
-    const searchParams = request.nextUrl.searchParams;
-    const code = searchParams.get('code');
+  const searchParams = request.nextUrl.searchParams;
+  const code = searchParams.get('code');
 
     if (!code) {
       throw new Error('No authorization code received');
