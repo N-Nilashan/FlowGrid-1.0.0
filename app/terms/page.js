@@ -71,7 +71,7 @@ const TermsOfService = () => {
           <section className="bg-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-white mb-4">8. Contact Us</h2>
             <p>If you have any questions about these Terms, please contact us at:</p>
-            <p className="mt-2">Email: support@flowgrid.ai</p>
+            <p className="mt-2">Email: informal.nimesh@gmail.com</p>
           </section>
 
           <div className="text-sm text-gray-400 mt-8">

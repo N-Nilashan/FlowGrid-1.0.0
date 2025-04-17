@@ -40,7 +40,45 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">4. Your Rights</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">4. Google OAuth Scopes</h2>
+            <p className="mb-4">We request the following Google OAuth scopes to provide our core functionality:</p>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium text-white">Calendar Access</h3>
+                <p className="text-gray-300 mt-2">We request calendar access to:</p>
+                <ul className="list-disc pl-5 space-y-2 mt-2">
+                  <li>Read your calendar events to display them alongside tasks</li>
+                  <li>Create and modify events when you schedule tasks</li>
+                  <li>Ensure task deadlines don't conflict with existing commitments</li>
+                </ul>
+                <p className="text-gray-300 mt-2">More limited scopes (read-only access) would prevent us from automatically scheduling tasks and managing your calendar events, which are core features of our productivity platform.</p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-white">Profile Information</h3>
+                <p className="text-gray-300 mt-2">We request basic profile information to:</p>
+                <ul className="list-disc pl-5 space-y-2 mt-2">
+                  <li>Create and personalize your account</li>
+                  <li>Display your name and profile picture</li>
+                  <li>Enable secure authentication</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-white">Data Usage & Security</h3>
+                <p className="text-gray-300 mt-2">We commit to:</p>
+                <ul className="list-disc pl-5 space-y-2 mt-2">
+                  <li>Only accessing the minimum data required for requested features</li>
+                  <li>Never sharing or selling your Google account data</li>
+                  <li>Storing data securely with industry-standard encryption</li>
+                  <li>Allowing you to revoke access at any time</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">5. Your Rights</h2>
             <p className="mb-4">You have the right to:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li>Access your personal data</li>
@@ -51,9 +89,9 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">5. Contact Us</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">6. Contact Us</h2>
             <p>If you have any questions about our Privacy Policy, please contact us at:</p>
-            <p className="mt-2">Email: support@flowgrid.ai</p>
+            <p className="mt-2">Email: informal.nimesh@gmail.com</p>
           </section>
 
           <div className="text-sm text-gray-400 mt-8">

@@ -8,6 +8,8 @@ import dynamic from 'next/dynamic';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import GoogleCalendarSection from '../components/GoogleCalendarSection';
+import SettingsTab from '../components/SettingsTab';
+import HelpTab from '../components/HelpTab';
 
 // Dynamically import the TaskView component
 const TaskView = dynamic(
@@ -20,6 +22,25 @@ const Dashboard = () => {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Google Calendar');
+  const [calendarConnected, setCalendarConnected] = useState(false);
+
+  // Check calendar connection status
+  useEffect(() => {
+    const checkCalendarStatus = async () => {
+      try {
+        const response = await fetch('/api/calendar/status');
+        const data = await response.json();
+        setCalendarConnected(data.connected);
+      } catch (error) {
+        console.error('Error checking calendar status:', error);
+        setCalendarConnected(false);
+      }
+    };
+
+    if (session) {
+      checkCalendarStatus();
+    }
+  }, [session]);
 
   // Remove the screen size effect since we want consistent behavior
   useEffect(() => {
@@ -50,6 +71,21 @@ const Dashboard = () => {
     );
   }
 
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'Google Calendar':
+        return <GoogleCalendarSection isConnected={calendarConnected} />;
+      case 'Tasks':
+        return <TaskView />;
+      case 'Settings':
+        return <SettingsTab />;
+      case 'Help':
+        return <HelpTab />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       <Navbar setSidebarOpen={setSidebarOpen} />
@@ -60,16 +96,13 @@ const Dashboard = () => {
           setSidebarOpen={setSidebarOpen}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          calendarConnected={calendarConnected}
         />
 
         {/* Main content */}
         <div className={`flex-1 overflow-auto w-full transition-all duration-300 ease-in-out`}>
           <main className="px-4 py-6 sm:px-6 lg:px-8">
-            {activeTab === 'Google Calendar' ? (
-              <GoogleCalendarSection />
-            ) : activeTab === 'Tasks' ? (
-              <TaskView />
-            ) : null}
+            {renderActiveTab()}
           </main>
         </div>
       </div>

@@ -1,5 +1,6 @@
 'use client'
 import { signOut } from 'next-auth/react';
+import { CalendarIcon, CheckCircleIcon, Cog6ToothIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 const navItems = [
   { name: 'Google Calendar', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
@@ -12,7 +13,31 @@ const bottomNavItems = [
   { name: 'Logout', icon: 'M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' },
 ];
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, calendarConnected }) => {
+  const tabs = [
+    {
+      name: 'Google Calendar',
+      icon: CalendarIcon,
+      current: activeTab === 'Google Calendar',
+      status: calendarConnected ? 'connected' : 'disconnected'
+    },
+    {
+      name: 'Tasks',
+      icon: CheckCircleIcon,
+      current: activeTab === 'Tasks'
+    },
+    {
+      name: 'Settings',
+      icon: Cog6ToothIcon,
+      current: activeTab === 'Settings'
+    },
+    {
+      name: 'Help',
+      icon: QuestionMarkCircleIcon,
+      current: activeTab === 'Help'
+    }
+  ];
+
   return (
     <>
       <div
@@ -21,29 +46,38 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
       >
         <div className="h-full flex flex-col justify-between py-4">
           <div className="px-4 space-y-1 mt-5">
-            {navItems.map((item) => (
+            {tabs.map((tab) => (
               <button
-                key={item.name}
+                key={tab.name}
                 onClick={() => {
-                  setActiveTab(item.name);
+                  setActiveTab(tab.name);
                   if (window.innerWidth < 768) {
                     setSidebarOpen(false);
                   }
                 }}
-                className={`group flex items-center w-full px-2 py-2.5 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 ${activeTab === item.name ? 'bg-gray-700 text-white' : ''
-                  }`}
+                className={`${tab.current
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  } group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md w-full transition-colors duration-150`}
               >
-                <svg
-                  className={`mr-3 h-5 w-5 ${activeTab === item.name ? 'text-purple-400' : 'text-gray-400 group-hover:text-purple-400'
-                    }`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
-                </svg>
-                {item.name}
+                <div className="flex items-center">
+                  <tab.icon
+                    className={`${tab.current ? 'text-purple-400' : 'text-gray-400 group-hover:text-gray-300'
+                      } mr-3 flex-shrink-0 h-6 w-6`}
+                    aria-hidden="true"
+                  />
+                  {tab.name}
+                </div>
+                {tab.status && (
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tab.status === 'connected'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                      }`}
+                  >
+                    {tab.status}
+                  </span>
+                )}
               </button>
             ))}
           </div>
