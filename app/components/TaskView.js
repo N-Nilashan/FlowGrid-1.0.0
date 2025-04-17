@@ -470,16 +470,20 @@ const TaskView = () => {
                 }`} />
             </div>
           </div>
-          <p className={`text-xs sm:text-sm mt-1 transition-all duration-500 ease-in-out ${completedTasks.has(task.id) ? 'text-gray-500' : 'text-gray-400'
-            }`}>
-            {new Date(task.start).toLocaleString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit'
-            })}
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+            <p className={`text-xs sm:text-sm transition-all duration-500 ease-in-out ${completedTasks.has(task.id) ? 'text-gray-500' : 'text-gray-400'}`}>
+              {new Date(task.start).toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </p>
+            <div className={`flex items-center gap-1 text-xs sm:text-sm ${completedTasks.has(task.id) ? 'text-gray-500' : 'text-gray-400'}`}>
+              <span>{new Date(task.start).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+              <span>-</span>
+              <span>{new Date(task.end).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+            </div>
+          </div>
         </div>
 
         {category === 'uncategorized' && (
