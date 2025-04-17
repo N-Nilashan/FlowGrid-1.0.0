@@ -9,6 +9,7 @@ const TaskView = () => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [categoryFilter, setCategoryFilter] = useState('all'); // 'all', 'studies', 'work', 'health', 'personal', 'uncategorized'
   const [recategorizeTask, setRecategorizeTask] = useState(null); // Store task being recategorized
+  const [lastFetchTime, setLastFetchTime] = useState(null);
 
   // Gamification state
   const [streak, setStreak] = useState(0);
@@ -93,10 +94,13 @@ const TaskView = () => {
     try {
       const gameData = {
         streak,
-        lastCompletedDate,
+        lastCompletedDate: lastCompletedDate ? new Date(lastCompletedDate).toISOString() : null,
         experience,
         level,
-        achievements,
+        achievements: achievements.map(a => ({
+          ...a,
+          completed: a.completed || false
+        }))
       };
 
       console.log('Sending update with data:', gameData);
@@ -109,26 +113,8 @@ const TaskView = () => {
         body: JSON.stringify(gameData),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        // If we get an error about no rows, try fetching first
-        if (data.error && data.error.includes('no rows')) {
-          console.log('No existing record, fetching first...');
-          await fetchGamificationData();
-          // Retry the update
-          const retryResponse = await fetch('/api/gamification/update', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(gameData),
-          });
-          if (!retryResponse.ok) {
-            throw new Error('Update retry failed');
-          }
-          return;
-        }
+        const data = await response.json();
         throw new Error(data.error || 'Failed to update gamification data');
       }
 
@@ -138,13 +124,13 @@ const TaskView = () => {
     }
   };
 
+  // Debounce the update to avoid too many requests
   useEffect(() => {
-    fetchTasks();
-    fetchGamificationData();
-  }, [viewMode]);
+    const timer = setTimeout(() => {
+      updateGamificationData();
+    }, 1000); // Wait 1 second after the last change
 
-  useEffect(() => {
-    updateGamificationData();
+    return () => clearTimeout(timer);
   }, [streak, lastCompletedDate, experience, level, achievements]);
 
   // Calculate level based on experience
@@ -925,6 +911,30 @@ const TaskView = () => {
       </div>
     );
   };
+
+  // Initialize tasks and gamification data
+  useEffect(() => {
+    const initializeData = async () => {
+      // Only fetch if we haven't fetched in the last 5 minutes
+      const now = Date.now();
+      if (!lastFetchTime || (now - lastFetchTime) > 5 * 60 * 1000) {
+        setIsLoading(true);
+        try {
+          await Promise.all([
+            fetchTasks(),
+            fetchGamificationData()
+          ]);
+          setLastFetchTime(now);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    initializeData();
+  }, [viewMode, lastFetchTime]); // Only re-fetch when view mode changes or when enough time has passed
 
   if (isLoading) {
     return <LoadingAnimation stage="calendar" />;

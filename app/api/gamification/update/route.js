@@ -30,39 +30,48 @@ export async function POST(req) {
       .eq('email', session.user.email)
       .single();
 
-    if (checkError) {
+    if (checkError && checkError.code !== 'PGRST116') {
       console.error('Update - Error checking existing record:', checkError);
       throw checkError;
     }
 
+    const currentTime = new Date().toISOString();
+    const gameData = {
+      streak: body.streak,
+      last_completed_date: body.lastCompletedDate,
+      experience: body.experience,
+      level: body.level,
+      achievements: body.achievements,
+      updated_at: currentTime
+    };
+
+    let result;
     if (!existingData) {
-      console.error('Update - No existing record found for email:', session.user.email);
-      return new Response(JSON.stringify({ error: 'No gamification record found' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // Insert new record
+      console.log('Update - Creating new record for:', session.user.email);
+      result = await supabaseAdmin
+        .from('gamification')
+        .insert({
+          ...gameData,
+          email: session.user.email,
+          created_at: currentTime
+        });
+    } else {
+      // Update existing record
+      console.log('Update - Updating existing record for:', session.user.email);
+      result = await supabaseAdmin
+        .from('gamification')
+        .update(gameData)
+        .eq('email', session.user.email);
     }
 
-    // Update gamification data
-    const { error } = await supabaseAdmin
-      .from('gamification')
-      .update({
-        streak: body.streak,
-        last_completed_date: body.lastCompletedDate,
-        experience: body.experience,
-        level: body.level,
-        achievements: body.achievements,
-        updated_at: new Date().toISOString()
-      })
-      .eq('email', session.user.email);
-
-    if (error) {
+    if (result.error) {
       console.error('Update - Supabase error:', {
-        error,
+        error: result.error,
         email: session.user.email,
         body
       });
-      throw error;
+      throw result.error;
     }
 
     console.log('Update - Successfully updated gamification data');
