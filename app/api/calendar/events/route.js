@@ -28,6 +28,26 @@ export async function GET(request) {
     refresh_token: refreshToken,
   });
 
+  // Add token refresh handling
+  oauth2Client.on('tokens', async (tokens) => {
+    if (tokens.access_token) {
+      await cookieStore.set('calendar_access_token', tokens.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 // 7 days
+      });
+    }
+    if (tokens.refresh_token) {
+      await cookieStore.set('calendar_refresh_token', tokens.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 365 * 24 * 60 * 60 // 1 year
+      });
+    }
+  });
+
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   try {

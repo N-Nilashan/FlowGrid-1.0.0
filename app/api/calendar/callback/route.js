@@ -28,13 +28,13 @@ export async function GET(request) {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    // Store tokens securely in cookies
+    // Store tokens securely in cookies with longer expiration
     const cookieStore = cookies();
     await cookieStore.set('calendar_access_token', tokens.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 3600 // 1 hour
+      maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
     if (tokens.refresh_token) {
@@ -42,7 +42,7 @@ export async function GET(request) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60 // 30 days
+        maxAge: 365 * 24 * 60 * 60 // 1 year
       });
     }
 
