@@ -16,7 +16,7 @@ const TaskView = dynamic(
 );
 
 const SettingsView = dynamic(
-  () => import('../components/SettingsView'),
+  () => import('../components/Settings'),
   { ssr: false }
 );
 
