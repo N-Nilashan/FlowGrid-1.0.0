@@ -98,6 +98,23 @@ export async function GET(req) {
     const events = response.data.items || [];
     console.log(`Found ${events.length} calendar events`);
 
+    // Create a set of current event IDs
+    const currentEventIds = new Set(events.map(event => event.id));
+
+    // Delete tasks that no longer exist in calendar
+    const { error: deleteError } = await supabaseAdmin
+      .from('tasks')
+      .delete()
+      .eq('user_id', session.user.email)
+      .gte('start', startOfToday.toISOString())
+      .lte('start', endOfWeek.toISOString())
+      .not('id', 'in', `(${Array.from(currentEventIds).map(id => `'${id}'`).join(',')})`);
+
+    if (deleteError) {
+      console.error('Error deleting old tasks:', deleteError);
+      throw new Error('Failed to delete old tasks');
+    }
+
     // Process events into tasks
     const processedTasks = events.map(event => ({
       id: event.id,

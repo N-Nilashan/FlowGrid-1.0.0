@@ -12,6 +12,34 @@ const GoogleCalendarView = () => {
   const [view, setView] = useState('timeGridWeek');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const calendarRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Add window resize handler
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+
+      // Update calendar view if needed
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        if (mobile && calendarApi.view.type === 'timeGridWeek') {
+          calendarApi.changeView('timeGridThreeDay');
+          setView('timeGridThreeDay');
+        } else if (!mobile && calendarApi.view.type === 'timeGridThreeDay') {
+          calendarApi.changeView('timeGridWeek');
+          setView('timeGridWeek');
+        }
+      }
+    };
+
+    // Initial check
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -218,13 +246,13 @@ const GoogleCalendarView = () => {
               Day
             </button>
             <button
-              onClick={() => changeView('timeGridWeek')}
-              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${view === 'timeGridWeek'
+              onClick={() => changeView(isMobile ? 'timeGridThreeDay' : 'timeGridWeek')}
+              className={`px-3 py-1 rounded-md text-sm transition-all duration-200 ${(view === 'timeGridWeek' || view === 'timeGridThreeDay')
                 ? 'bg-purple-600 text-white'
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
             >
-              Week
+              {isMobile ? '3 Days' : 'Week'}
             </button>
             <button
               onClick={() => changeView('dayGridMonth')}
@@ -331,7 +359,14 @@ const GoogleCalendarView = () => {
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView={view}
+            initialView={isMobile ? 'timeGridThreeDay' : 'timeGridWeek'}
+            views={{
+              timeGridThreeDay: {
+                type: 'timeGrid',
+                duration: { days: 3 },
+                buttonText: '3 days'
+              }
+            }}
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
