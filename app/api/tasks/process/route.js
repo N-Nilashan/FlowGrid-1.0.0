@@ -71,7 +71,7 @@ export async function GET(req) {
     // First, get existing tasks to preserve completion status
     const { data: existingTasks, error: existingTasksError } = await supabaseAdmin
       .from('tasks')
-      .select('id, completed')
+      .select('id, completed, category')
       .eq('user_id', session.user.email);
 
     if (existingTasksError) {
@@ -79,9 +79,12 @@ export async function GET(req) {
       throw new Error('Failed to fetch existing tasks');
     }
 
-    // Create a map of existing task completion status
+    // Create maps of existing task completion status and categories
     const existingTasksMap = new Map(
-      existingTasks.map(task => [task.id, task.completed])
+      existingTasks.map(task => [task.id, {
+        completed: task.completed,
+        category: task.category
+      }])
     );
 
     const response = await calendar.events.list({
@@ -116,19 +119,23 @@ export async function GET(req) {
     }
 
     // Process events into tasks
-    const processedTasks = events.map(event => ({
-      id: event.id,
-      title: event.summary || 'Untitled',
-      description: event.description || '',
-      start: event.start.dateTime || event.start.date,
-      end: event.end.dateTime || event.end.date,
-      category: determineCategory(event),
-      priority: determinePriority(event),
-      completed: existingTasksMap.get(event.id) || false,
-      user_id: session.user.email,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }));
+    const processedTasks = events.map(event => {
+      const existingTask = existingTasksMap.get(event.id);
+      return {
+        id: event.id,
+        title: event.summary || 'Untitled',
+        description: event.description || '',
+        start: event.start.dateTime || event.start.date,
+        end: event.end.dateTime || event.end.date,
+        // Use existing category if manually set, otherwise determine new category
+        category: existingTask?.category || determineCategory(event),
+        priority: determinePriority(event),
+        completed: existingTask?.completed || false,
+        user_id: session.user.email,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    });
 
     console.log('Upserting tasks to Supabase...');
     const { error } = await supabaseAdmin
