@@ -20,6 +20,11 @@ const SettingsView = dynamic(
   { ssr: false }
 );
 
+const HelpView = dynamic(
+  () => import('../components/HelpView'),
+  { ssr: false }
+);
+
 const Dashboard = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -70,12 +75,14 @@ const Dashboard = () => {
         {/* Main content */}
         <div className={`flex-1 overflow-auto w-full transition-all duration-300 ease-in-out`}>
           <main className="px-4 py-6 sm:px-6 lg:px-8">
-            {activeTab ===  'Google Calendar' ? (
+            {activeTab === 'Google Calendar' ? (
               <GoogleCalendarSection />
             ) : activeTab === 'Tasks' ? (
               <TaskView />
-            ) : activeTab === 'Settings'?(
+            ) : activeTab === 'Settings' ? (
               <SettingsView />
+            ) : activeTab === 'Help' ? (
+              <HelpView />
             ) : null}
           </main>
         </div>
