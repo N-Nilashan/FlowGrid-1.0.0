@@ -16,16 +16,15 @@ const HelpView = () => {
       <div>
         <h3 className="text-xl font-semibold mb-2">How do I create a new task?</h3>
         <p className="text-gray-300">
-          Navigate to the Tasks tab and click the "Add Task" button. Fill in the task details such as title,
-          description, due date, and priority. Then click "Create Task" to add it to your task list.
+          Create a new event in your Google Calendar and it will automatically appear in FlowGrid. Check the Tasks tab for more details.
         </p>
       </div>
 
       <h2 className="text-2xl font-bold mb-4">Support</h2>
       <p className="text-gray-300">
         If you need further assistance, please contact our support team at{' '}
-        <a href="mailto:support@example.com" className="text-purple-400 hover:underline">
-          support@example.com
+        <a href="mailto:informal.nimesh@gmail.com" className="text-purple-400 hover:underline">
+          informal.nimesh@gmail.com
         </a>
         . We're here to help!
       </p>
