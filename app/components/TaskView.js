@@ -26,9 +26,6 @@ const TaskView = () => {
   ]);
   const [showAchievement, setShowAchievement] = useState(null);
 
-  const [goals, setGoals] = useState([]);
-  const [newGoal, setNewGoal] = useState('');
-
   const fetchTasks = async () => {
     try {
       const response = await fetch(`/api/tasks/process?view=${viewMode}`);
@@ -939,82 +936,6 @@ const TaskView = () => {
     initializeData();
   }, [viewMode, lastFetchTime]); // Only re-fetch when view mode changes or when enough time has passed
 
-  const TodaysGoals = () => {
-    useEffect(() => {
-      fetchTodaysGoals();
-    }, []);
-
-    const fetchTodaysGoals = async () => {
-      try {
-        const response = await fetch('/api/goals/today');
-        const data = await response.json();
-        setGoals(data);
-      } catch (error) {
-        console.error('Error fetching today\'s goals:', error);
-      }
-    };
-
-    const addGoal = async (e) => {
-      if (e.key === 'Enter' && newGoal.trim() !== '') {
-        try {
-          const response = await fetch('/api/goals', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ goal: newGoal }),
-          });
-          if (response.ok) {
-            setNewGoal('');
-            fetchTodaysGoals();
-          }
-        } catch (error) {
-          console.error('Error adding goal:', error);
-        }
-      }
-    };
-
-    const deleteGoal = async (goalId) => {
-      try {
-        await fetch(`/api/goals/${goalId}`, { method: 'DELETE' });
-        fetchTodaysGoals();
-      } catch (error) {
-        console.error('Error deleting goal:', error);
-      }
-    };
-
-    return (
-      <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20 mb-6">
-        <h3 className="text-lg font-semibold text-white mb-3">Today's Goals</h3>
-
-        <ul className="space-y-2 mb-4">
-          {goals.map((goal) => (
-            <li key={goal.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
-              <span className="text-gray-300">{goal.goal}</span>
-              <button
-                onClick={() => deleteGoal(goal.id)}
-                className="text-gray-400 hover:text-red-500 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        {goals.length < 5 && (
-          <input
-            type="text"
-            placeholder="Add a goal..."
-            value={newGoal}
-            onChange={(e) => setNewGoal(e.target.value)}
-            onKeyDown={addGoal}
-            className="w-full bg-gray-700 text-gray-300 rounded p-2"
-          />
-        )}
-      </div>
-    );
-  };
-
   if (isLoading) {
     return <LoadingAnimation stage="calendar" />;
   }
@@ -1067,9 +988,6 @@ const TaskView = () => {
 
       {/* Gamification Panel */}
       <GamificationPanel />
-
-      {/* Today's Goals */}
-      <TodaysGoals />
 
       {/* Priority Legend */}
       <PriorityLegend />
