@@ -1,10 +1,39 @@
-'use client'
 // pages/index.js
 import Link from 'next/link';
 import { FaCalendarAlt, FaCheckSquare, FaClock, FaChartLine } from 'react-icons/fa';
-import  WaitlistForm  from './components/WaitlistForm'
+import { useState } from 'react';
 
 export default function Home() {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleWaitlistSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-gray-900 text-gray-200 min-h-screen font-sans overflow-x-hidden">
       {/* Glowing Background Elements */}
@@ -60,7 +89,7 @@ export default function Home() {
                   </span>
                 </h1>
                 <p className="mt-6 text-xl text-gray-300">
-                FlowGrid helps you organize your academic life and boost productivity by 30% through AI-powered task management, deadline tracking, and smart calendar integration.
+                  FlowGrid helps you organize your academic life and boost productivity by 30% through AI-powered task management, deadline tracking, and smart calendar integration.
                 </p>
                 <div className="mt-8 sm:flex space-x-4">
                   <div className="rounded-md shadow-lg shadow-purple-500/20">
@@ -72,17 +101,6 @@ export default function Home() {
                     <Link href="#demo" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
                       Watch demo
                     </Link>
-                  </div>
-                </div>
-                <div className="mt-8">
-                  <div className="max-w-md mx-auto bg-gray-800/50 p-6 rounded-xl border border-gray-800 backdrop-blur-sm">
-                    <p className="text-gray-300 text-center mb-4">
-                      Join the waitlist with <span className="text-purple-400">120+ early supporters</span>
-                    </p>
-                    <WaitlistForm />
-                    <p className="text-gray-500 text-xs text-center mt-4">
-                      Launching in April 2025
-                    </p>
                   </div>
                 </div>
               </div>
@@ -99,7 +117,7 @@ export default function Home() {
                 <div className="ml-4 text-xs text-gray-300 font-mono">FlowGrid Dashboard</div>
               </div>
               <div className="pt-8 text-center">
-              <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-full object-cover rounded-lg" />
+                <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-full object-cover rounded-lg" />
               </div>
               <div className="absolute bottom-4 left-4 right-4 h-16 bg-gradient-to-r from-purple-900/20 to-fuchsia-900/20 rounded border border-gray-800 flex items-center px-4">
                 <div className="w-3 h-3 rounded-full bg-purple-500 mr-2 animate-pulse"></div>
@@ -108,8 +126,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {/* Add this right after the existing buttons in your hero section */}
-
       </div>
 
       {/* Glowing separator */}
@@ -247,6 +263,50 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Waitlist Section */}
+      <div className="bg-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-lg mx-auto">
+            <h2 className="text-3xl font-extrabold text-white text-center sm:text-4xl">
+              Join the Waitlist
+            </h2>
+            <p className="mt-4 text-lg text-gray-400 text-center">
+              Be the first to know when we launch. Sign up for our waitlist now!
+            </p>
+            <form onSubmit={handleWaitlistSubmit} className="mt-8 sm:flex">
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500 focus:border-purple-500 sm:max-w-xs rounded-md"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3 sm:flex-shrink-0">
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Notify me'}
+                </button>
+              </div>
+            </form>
+            {submitStatus === 'success' && (
+              <p className="mt-2 text-green-400">Thanks for signing up!</p>
+            )}
+            {submitStatus === 'error' && (
+              <p className="mt-2 text-red-500">Oops! Something went wrong.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Call to Action Section */}
       <div className="bg-gradient-to-r from-purple-900 to-fuchsia-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-[size:50px_50px] opacity-10"></div>
@@ -271,38 +331,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* Add this right before the footer section */}
-      <div className="bg-gray-900 py-20 border-t border-gray-800">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-              <span className="block">Stay close to the people who matter</span>
-            </h2>
-            <p className="mt-4 text-xl text-gray-400 max-w-3xl mx-auto">
-              Join our waitlist to be among the first to experience FlowGrid when we launch.
-            </p>
 
-            <div className="mt-10 max-w-md mx-auto">
-              <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-800 backdrop-blur-sm">
-                <p className="text-gray-300 mb-6">
-                  Join the waitlist with <span className="text-purple-400">120+ early supporters</span>
-                </p>
-                <WaitlistForm />
-                <p className="text-gray-500 text-sm mt-4">
-                  Launching in April 2025
-                </p>
-              </div>
-
-              <div className="mt-12">
-                <h3 className="text-2xl font-bold text-white">
-                  Why 💤 is OP?
-                </h3>
-                <p className="mt-4 text-gray-400">
-                  FlowGrid revolutionizes student productivity by combining AI-powered organization with intuitive design.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       {/* Footer */}
       <footer className="bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
         <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
