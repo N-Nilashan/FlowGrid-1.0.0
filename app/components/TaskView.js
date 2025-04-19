@@ -2,6 +2,54 @@
 import { useState, useEffect } from 'react';
 
 const TaskView = () => {
+  // Today's Goals state
+  const [goals, setGoals] = useState(() => {
+    // Try to load today's goals from localStorage (persist until midnight)
+    const saved = localStorage.getItem('todaysGoals');
+    const dateSaved = localStorage.getItem('todaysGoalsDate');
+    const today = new Date().toDateString();
+    if (saved && dateSaved === today) {
+      return JSON.parse(saved);
+    }
+    // If not today or not set, reset
+    localStorage.removeItem('todaysGoals');
+    localStorage.setItem('todaysGoalsDate', today);
+    return [];
+  });
+  const [goalInput, setGoalInput] = useState('');
+
+  // Reset goals at midnight
+  useEffect(() => {
+    const checkMidnight = () => {
+      const now = new Date();
+      const tomorrow = new Date();
+      tomorrow.setHours(24, 0, 0, 0);
+      setTimeout(() => {
+        setGoals([]);
+        localStorage.removeItem('todaysGoals');
+        localStorage.setItem('todaysGoalsDate', new Date().toDateString());
+      }, tomorrow - now);
+    };
+    checkMidnight();
+  }, []);
+
+  // Persist goals to localStorage
+  useEffect(() => {
+    localStorage.setItem('todaysGoals', JSON.stringify(goals));
+    localStorage.setItem('todaysGoalsDate', new Date().toDateString());
+  }, [goals]);
+
+  const handleAddGoal = (e) => {
+    e.preventDefault();
+    const trimmed = goalInput.trim();
+    if (!trimmed || goals.length >= 5) return;
+    setGoals([...goals, trimmed]);
+    setGoalInput('');
+  };
+  const handleDeleteGoal = (idx) => {
+    setGoals(goals.filter((_, i) => i !== idx));
+  };
+
   const [tasks, setTasks] = useState({ studies: [], work: [], health: [], personal: [], uncategorized: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1000,6 +1048,46 @@ const TaskView = () => {
 
       {/* Gamification Panel */}
       <GamificationPanel />
+
+      {/* Today's Goals Section */}
+      <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20 mb-6">
+        <h3 className="text-sm font-medium text-gray-400 mb-2">Today's Goals</h3>
+        <p className="text-xs text-gray-400 mb-3">Set up to 5 simple goals for today. These will reset at midnight.</p>
+        <form onSubmit={handleAddGoal} className="flex gap-2 mb-3">
+          <input
+            type="text"
+            className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder={goals.length >= 5 ? 'Goal limit reached' : 'Add a goal for today...'}
+            value={goalInput}
+            maxLength={60}
+            onChange={e => setGoalInput(e.target.value)}
+            disabled={goals.length >= 5}
+          />
+          <button
+            type="submit"
+            disabled={!goalInput.trim() || goals.length >= 5}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${goals.length >= 5 || !goalInput.trim()
+              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+              : 'bg-purple-600 text-white hover:bg-purple-700'}`}
+          >
+            Add
+          </button>
+        </form>
+        <ul className="space-y-2">
+          {goals.map((goal, idx) => (
+            <li key={idx} className="flex items-center justify-between bg-gray-700 rounded-lg px-3 py-2">
+              <span className="text-sm text-white break-words flex-1">{goal}</span>
+              <button
+                className="ml-3 text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 rounded transition-colors"
+                onClick={() => handleDeleteGoal(idx)}
+                title="Delete goal"
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Priority Legend */}
       <PriorityLegend />
