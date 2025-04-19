@@ -1,13 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { useSession } from 'next-auth/react';
-
-// Initialize the Supabase client with environment variables
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 const TaskView = () => {
-  const { data: session } = useSession();
   const [tasks, setTasks] = useState({ studies: [], work: [], health: [], personal: [], uncategorized: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,8 +9,22 @@ const TaskView = () => {
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [categoryFilter, setCategoryFilter] = useState('all'); // 'all', 'studies', 'work', 'health', 'personal', 'uncategorized'
   const [recategorizeTask, setRecategorizeTask] = useState(null); // Store task being recategorized
+  const [lastFetchTime, setLastFetchTime] = useState(null);
 
-  // Remove local gamification state variables
+  // Gamification state
+  const [streak, setStreak] = useState(0);
+  const [lastCompletedDate, setLastCompletedDate] = useState(null);
+  const [experience, setExperience] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [achievements, setAchievements] = useState([
+    { id: 'first_task', title: 'First Steps', description: 'Complete your first task', completed: false, icon: '🎯' },
+    { id: 'five_tasks', title: 'Getting Things Done', description: 'Complete 5 tasks', completed: false, icon: '🏆' },
+    { id: 'category_master', title: 'Category Master', description: 'Complete tasks in all categories', completed: false, icon: '🌈' },
+    { id: 'streak_3', title: 'On a Roll', description: 'Maintain a 3-day streak', completed: false, icon: '🔥' },
+    { id: 'perfect_day', title: 'Perfect Day', description: 'Complete all tasks for a day', completed: false, icon: '⭐' },
+  ]);
+  const [showAchievement, setShowAchievement] = useState(null);
 
   const fetchTasks = async () => {
     try {
@@ -44,61 +52,86 @@ const TaskView = () => {
 
   const fetchGamificationData = async () => {
     try {
-      // Fetch gamification data from Supabase
-      const { data, error } = await supabase
-        .from('gamification')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
+      const response = await fetch('/api/gamification');
+      const data = await response.json();
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        // If we get a specific error about multiple rows, try cleaning up
+        if (data.error && data.error.includes('multiple')) {
+          console.log('Detected multiple rows, attempting cleanup...');
+          const cleanupResponse = await fetch('/api/gamification/cleanup');
+          if (!cleanupResponse.ok) {
+            throw new Error('Cleanup failed');
+          }
+          // Retry the original fetch after cleanup
+          const retryResponse = await fetch('/api/gamification');
+          const retryData = await retryResponse.json();
+          if (!retryResponse.ok) {
+            throw new Error(retryData.error || 'Failed to fetch after cleanup');
+          }
+          // Use the retry data
+          setStreak(retryData.streak || 0);
+          setLastCompletedDate(retryData.lastCompletedDate || null);
+          setExperience(retryData.experience || 0);
+          setLevel(retryData.level || 1);
+          setAchievements(retryData.achievements || achievements);
+          return;
+        }
+        throw new Error(data.error || 'Failed to fetch gamification data');
       }
 
-      // Update state with fetched data
       setStreak(data.streak || 0);
-      setLastCompletedDate(data.last_completed_date || null);
+      setLastCompletedDate(data.lastCompletedDate || null);
       setExperience(data.experience || 0);
       setLevel(data.level || 1);
-      setAchievements(data.achievements || []);
+      setAchievements(data.achievements || achievements);
     } catch (error) {
-      console.error('Error fetching gamification data from Supabase:', error);
+      console.error('Error loading gamification data:', error);
     }
   };
 
-  const updateGamificationData = async (newData) => {
+  const updateGamificationData = async () => {
     try {
-      // Update gamification data in Supabase
-      const { error } = await supabase
-        .from('gamification')
-        .update(newData)
-        .eq('user_id', session.user.id);
+      const gameData = {
+        streak,
+        lastCompletedDate: lastCompletedDate ? new Date(lastCompletedDate).toISOString() : null,
+        experience,
+        level,
+        achievements: achievements.map(a => ({
+          ...a,
+          completed: a.completed || false
+        }))
+      };
 
-      if (error) {
-        throw error;
+      console.log('Sending update with data:', gameData);
+
+      const response = await fetch('/api/gamification/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gameData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update gamification data');
       }
 
-      console.log('Gamification data updated in Supabase');
+      console.log('Gamification update successful');
     } catch (error) {
-      console.error('Error updating gamification data in Supabase:', error);
+      console.error('Error updating gamification data:', error);
     }
   };
 
-  // Update Supabase immediately on gamification state changes
+  // Debounce the update to avoid too many requests
   useEffect(() => {
-    updateGamificationData({
-      streak,
-      last_completed_date: lastCompletedDate,
-      experience,
-      level,
-      achievements
-    });
-  }, [streak, lastCompletedDate, experience, level, achievements]);
+    const timer = setTimeout(() => {
+      updateGamificationData();
+    }, 1000); // Wait 1 second after the last change
 
-  // Fetch gamification data from Supabase on component mount
-  useEffect(() => {
-    fetchGamificationData();
-  }, []);
+    return () => clearTimeout(timer);
+  }, [streak, lastCompletedDate, experience, level, achievements]);
 
   // Calculate level based on experience
   useEffect(() => {
@@ -882,21 +915,26 @@ const TaskView = () => {
   // Initialize tasks and gamification data
   useEffect(() => {
     const initializeData = async () => {
-      setIsLoading(true);
-      try {
-        await Promise.all([
-          fetchTasks(),
-          fetchGamificationData()
-        ]);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+      // Only fetch if we haven't fetched in the last 5 minutes
+      const now = Date.now();
+      if (!lastFetchTime || (now - lastFetchTime) > 5 * 60 * 1000) {
+        setIsLoading(true);
+        try {
+          await Promise.all([
+            fetchTasks(),
+            fetchGamificationData()
+          ]);
+          setLastFetchTime(now);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
     initializeData();
-  }, [viewMode]); // Only re-fetch when view mode changes
+  }, [viewMode, lastFetchTime]); // Only re-fetch when view mode changes or when enough time has passed
 
   if (isLoading) {
     return <LoadingAnimation stage="calendar" />;
