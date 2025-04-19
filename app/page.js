@@ -68,8 +68,8 @@ export default function Home() {
             </div>
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Link href="/sign-in" className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300">
-                  Get Started
+                <Link href="#waitlist" className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300">
+                  Join waitlist
                 </Link>
               </div>
             </div>
@@ -108,9 +108,44 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <div className="h-56 w-full sm:h-72 lg:h-full flex items-center justify-center">
-            <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-auto object-cover rounded-lg" />
+      </div>
+
+      {/* Demo Images Section */}
+      <div className="bg-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <div className="aspect-w-3 aspect-h-2">
+                <div className="w-full h-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-lg text-gray-300 text-center">Edit and view your Google Calendar in our app</p>
+            </div>
+
+            <div>
+              <div className="aspect-w-3 aspect-h-2">
+                <div className="w-full h-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-lg text-gray-300 text-center">Track your events by ticking off our categorized to-do lists</p>
+            </div>
+
+            <div>
+              <div className="aspect-w-3 aspect-h-2">
+                <div className="w-full h-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-lg text-gray-300 text-center">Level up your life by tracking your progress with our gamification system</p>
+            </div>
           </div>
         </div>
       </div>
