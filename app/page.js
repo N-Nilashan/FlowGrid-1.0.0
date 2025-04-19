@@ -1,6 +1,7 @@
 // pages/index.js
 import Link from 'next/link';
 import { FaCalendarAlt, FaCheckSquare, FaClock, FaChartLine } from 'react-icons/fa';
+import { WaitlistForm } from '../components/WaitlistForm'
 
 export default function Home() {
   return (
@@ -72,6 +73,17 @@ export default function Home() {
                     </Link>
                   </div>
                 </div>
+                <div className="mt-8">
+                  <div className="max-w-md mx-auto bg-gray-800/50 p-6 rounded-xl border border-gray-800 backdrop-blur-sm">
+                    <p className="text-gray-300 text-center mb-4">
+                      Join the waitlist with <span className="text-purple-400">120+ early supporters</span>
+                    </p>
+                    <WaitlistForm />
+                    <p className="text-gray-500 text-xs text-center mt-4">
+                      Launching in April 2025
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -96,36 +108,7 @@ export default function Home() {
           </div>
         </div>
         {/* Add this right after the existing buttons in your hero section */}
-        <div className="mt-8">
-          <div className="max-w-md mx-auto bg-gray-800/50 p-6 rounded-xl border border-gray-800 backdrop-blur-sm">
-            <p className="text-gray-300 text-center mb-4">
-              Join the waitlist with <span className="text-purple-400">120+ early supporters</span>
-            </p>
-            <form
-              action="https://tally.so/r/meoJAq"
-              method="POST"
-              target="_blank"
-              className="space-y-4"
-            >
-              <input
-                type="email"
-                name="email"
-                placeholder="Email (so we can stay close)"
-                required
-                className="w-full px-4 py-3 bg-gray-800/70 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <button
-                type="submit"
-                className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-fuchsia-700 transition-all duration-300 shadow-lg shadow-purple-500/20"
-              >
-                Join Waitlist
-              </button>
-            </form>
-            <p className="text-gray-500 text-xs text-center mt-4">
-              Launching in April 2025
-            </p>
-          </div>
-        </div>
+
       </div>
 
       {/* Glowing separator */}
@@ -289,56 +272,36 @@ export default function Home() {
       </div>
       {/* Add this right before the footer section */}
       <div className="bg-gray-900 py-20 border-t border-gray-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-            <span className="block">Stay close to the people who matter</span>
-          </h2>
-          <p className="mt-4 text-xl text-gray-400 max-w-3xl mx-auto">
-            Join our waitlist to be among the first to experience FlowGrid when we launch.
-          </p>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+              <span className="block">Stay close to the people who matter</span>
+            </h2>
+            <p className="mt-4 text-xl text-gray-400 max-w-3xl mx-auto">
+              Join our waitlist to be among the first to experience FlowGrid when we launch.
+            </p>
 
-          <div className="mt-10 max-w-md mx-auto">
-            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-800 backdrop-blur-sm">
-              <p className="text-gray-300 mb-6">
-                Join the waitlist with <span className="text-purple-400">120+ early supporters</span>
-              </p>
-              <form
-                action="https://tally.so/r/meoJAq"
-                method="POST"
-                target="_blank"
-                className="space-y-4"
-              >
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email (so we can stay close)"
-                  required
-                  className="w-full px-4 py-3 bg-gray-800/70 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-                <button
-                  type="submit"
-                  className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-fuchsia-700 transition-all duration-300 shadow-lg shadow-purple-500/20"
-                >
-                  Join Waitlist
-                </button>
-              </form>
-              <p className="text-gray-500 text-sm mt-4">
-                Launching in April 2025
-              </p>
-            </div>
+            <div className="mt-10 max-w-md mx-auto">
+              <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-800 backdrop-blur-sm">
+                <p className="text-gray-300 mb-6">
+                  Join the waitlist with <span className="text-purple-400">120+ early supporters</span>
+                </p>
+                <WaitlistForm />
+                <p className="text-gray-500 text-sm mt-4">
+                  Launching in April 2025
+                </p>
+              </div>
 
-            <div className="mt-12">
-              <h3 className="text-2xl font-bold text-white">
-                Why 💤 is OP?
-              </h3>
-              <p className="mt-4 text-gray-400">
-                {/* Add your content here explaining why your app is great */}
-                FlowGrid revolutionizes student productivity by combining AI-powered organization with intuitive design.
-              </p>
+              <div className="mt-12">
+                <h3 className="text-2xl font-bold text-white">
+                  Why 💤 is OP?
+                </h3>
+                <p className="mt-4 text-gray-400">
+                  FlowGrid revolutionizes student productivity by combining AI-powered organization with intuitive design.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       {/* Footer */}
       <footer className="bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
         <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
