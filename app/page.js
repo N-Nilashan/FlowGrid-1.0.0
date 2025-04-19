@@ -84,23 +84,23 @@ export default function Home() {
             <div className="mt-10 sm:mt-12">
               <div className="sm:max-w-xl">
                 <h1 className="text-4xl font-extrabold tracking-tight text-gray-100 sm:text-5xl md:text-6xl">
-                  <span className="block mb-1">Transform your</span>
+                  <span className="block mb-1">Streamline your</span>
                   <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500">
-                    busy workflow
+                    busy schedule
                   </span>
                 </h1>
                 <p className="mt-6 text-xl text-gray-300">
-                  FlowGrid helps you organize your academic life and boost productivity by 30% through AI-powered task management, deadline tracking, and smart calendar integration.
+                  FlowGrid helps you take control of your time and boost productivity by 30% through AI-powered task management, deadline tracking, and seamless calendar integration. Say goodbye to manual to-do lists and hello to effortless organization.
                 </p>
                 <div className="mt-8 sm:flex space-x-4">
                   <div className="rounded-md shadow-lg shadow-purple-500/20">
-                    <Link href="/sign-in" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 md:text-lg transition-all duration-300 hover:shadow-purple-500/30">
-                      Start for free
+                    <Link href="#waitlist" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 md:text-lg transition-all duration-300 hover:shadow-purple-500/30">
+                      Join the waitlist
                     </Link>
                   </div>
                   <div className="mt-3 sm:mt-0">
-                    <Link href="#demo" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
-                      Watch demo
+                    <Link href="#features" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
+                      Learn more
                     </Link>
                   </div>
                 </div>
@@ -169,6 +169,76 @@ export default function Home() {
             {submitStatus === 'error' && (
               <p className="mt-2 text-red-500">Oops! Something went wrong.</p>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Why FlowGrid Section */}
+      <div className="bg-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Why FlowGrid?</h2>
+            <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-400">
+              FlowGrid is the ultimate productivity tool designed to simplify your life and help you achieve more.
+            </p>
+          </div>
+
+          <div className="mt-12">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="pt-6">
+                <div className="flow-root bg-gray-800 rounded-lg px-6 pb-8">
+                  <div className="-mt-6">
+                    <div>
+                      <span className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-md shadow-lg">
+                        <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 className="mt-8 text-lg font-medium text-white tracking-tight">Smart Calendar Integration</h3>
+                    <p className="mt-5 text-base text-gray-400">
+                      Seamlessly connect with your existing calendar and let FlowGrid automatically categorize your events.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <div className="flow-root bg-gray-800 rounded-lg px-6 pb-8">
+                  <div className="-mt-6">
+                    <div>
+                      <span className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-md shadow-lg">
+                        <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 className="mt-8 text-lg font-medium text-white tracking-tight">Intelligent Task Lists</h3>
+                    <p className="mt-5 text-base text-gray-400">
+                      FlowGrid generates optimized daily task lists based on your calendar events and priorities.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <div className="flow-root bg-gray-800 rounded-lg px-6 pb-8">
+                  <div className="-mt-6">
+                    <div>
+                      <span className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-md shadow-lg">
+                        <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 className="mt-8 text-lg font-medium text-white tracking-tight">Deadline Tracking</h3>
+                    <p className="mt-5 text-base text-gray-400">
+                      Never miss a deadline again with FlowGrid's automated deadline tracking and reminders.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -304,6 +374,82 @@ export default function Home() {
                 <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full filter blur-[6px]"></div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Early Access Benefits Section */}
+      <div className="bg-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">What do you get from early access?</h2>
+            <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-400">
+              Be among the first to experience the power of FlowGrid and unlock exclusive benefits.
+            </p>
+          </div>
+
+          <div className="mt-12">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="pt-6">
+                <div className="flow-root bg-gray-800 rounded-lg px-6 pb-8">
+                  <div className="-mt-6">
+                    <div>
+                      <span className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-md shadow-lg">
+                        <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 className="mt-8 text-lg font-medium text-white tracking-tight">Early Access</h3>
+                    <p className="mt-5 text-base text-gray-400">
+                      Be among the first to try out FlowGrid before it's available to the public.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <div className="flow-root bg-gray-800 rounded-lg px-6 pb-8">
+                  <div className="-mt-6">
+                    <div>
+                      <span className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-md shadow-lg">
+                        <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 className="mt-8 text-lg font-medium text-white tracking-tight">Exclusive Discounts</h3>
+                    <p className="mt-5 text-base text-gray-400">
+                      Enjoy special early bird pricing and lock in the best deals before launch.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <div className="flow-root bg-gray-800 rounded-lg px-6 pb-8">
+                  <div className="-mt-6">
+                    <div>
+                      <span className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-md shadow-lg">
+                        <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 className="mt-8 text-lg font-medium text-white tracking-tight">Priority Support</h3>
+                    <p className="mt-5 text-base text-gray-400">
+                      Get fast-tracked support and have your voice heard in shaping the future of FlowGrid.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link href="#waitlist" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 transition-all duration-300 hover:scale-[1.02]">
+              Join the waitlist
+            </Link>
           </div>
         </div>
       </div>
