@@ -1,6 +1,5 @@
 // components/WaitlistForm.js
 import { useState } from 'react'
-import { supabase } from '../utils/supabaseClient'
 
 export const WaitlistForm = () => {
   const [email, setEmail] = useState('')
