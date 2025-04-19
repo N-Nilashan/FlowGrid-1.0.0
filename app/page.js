@@ -98,7 +98,7 @@ export default function Home() {
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0">
-                  <Link href="#features" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
+                  <Link href="#demo" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
                     Learn more
                   </Link>
                 </div>
@@ -106,10 +106,20 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+          <div className="flex flex-col items-center">
+            <p className="text-gray-300 mb-2">Scroll below</p>
+            <div className="w-8 h-8 border-2 border-gray-300 rounded-full flex items-center justify-center animate-bounce">
+              <svg className="w-4 h-4 text-gray-300" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Demo Images Section */}
-      <div className="bg-gray-900 py-16">
+      <div id="demo" className="bg-gray-900 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <div>
