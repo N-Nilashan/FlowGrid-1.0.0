@@ -109,22 +109,8 @@ export default function Home() {
           </div>
         </div>
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <div className="h-56 w-full sm:h-72 lg:h-full rounded-bl-3xl border-l border-b border-gray-800 flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
-            <div className="relative w-5/6 h-5/6 border-2 border-gray-800 rounded-lg bg-gray-900/50 shadow-lg transform rotate-2 flex items-center justify-center overflow-hidden backdrop-blur-sm">
-              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-r from-purple-900/50 to-fuchsia-900/50 flex items-center px-4 border-b border-gray-800">
-                <div className="w-3 h-3 rounded-full bg-red-500 mr-2 shadow-sm shadow-red-500/50"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2 shadow-sm shadow-yellow-500/50"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm shadow-green-500/50"></div>
-                <div className="ml-4 text-xs text-gray-300 font-mono">FlowGrid Dashboard</div>
-              </div>
-              <div className="pt-8 text-center">
-                <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-full object-cover rounded-lg" />
-              </div>
-              <div className="absolute bottom-4 left-4 right-4 h-16 bg-gradient-to-r from-purple-900/20 to-fuchsia-900/20 rounded border border-gray-800 flex items-center px-4">
-                <div className="w-3 h-3 rounded-full bg-purple-500 mr-2 animate-pulse"></div>
-                <div className="text-xs text-gray-400 font-mono">SYNCING DATA...</div>
-              </div>
-            </div>
+          <div className="h-56 w-full sm:h-72 lg:h-full flex items-center justify-center">
+            <img src="/demo.png" alt="FlowGrid Dashboard" className="w-full h-auto object-cover rounded-lg" />
           </div>
         </div>
       </div>
@@ -331,7 +317,7 @@ export default function Home() {
         </div>
       </div>
 
-     
+
       {/* Footer */}
       <footer className="bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
         <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
