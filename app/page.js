@@ -80,29 +80,27 @@ export default function Home() {
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-16 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative z-10 py-8 md:py-16 lg:py-24 lg:max-w-2xl lg:w-full">
-            <div className="mt-10 sm:mt-12">
-              <div className="sm:max-w-xl">
-                <h1 className="text-4xl font-extrabold tracking-tight text-gray-100 sm:text-5xl md:text-6xl">
-                  <span className="block mb-1">Streamline your</span>
-                  <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500">
-                    busy schedule
-                  </span>
-                </h1>
-                <p className="mt-6 text-xl text-gray-300">
-                  FlowGrid helps you take control of your time and boost productivity by 30% through AI-powered task management, deadline tracking, and seamless calendar integration. Say goodbye to manual to-do lists and hello to effortless organization.
-                </p>
-                <div className="mt-8 sm:flex space-x-4">
-                  <div className="rounded-md shadow-lg shadow-purple-500/20">
-                    <Link href="#waitlist" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 md:text-lg transition-all duration-300 hover:shadow-purple-500/30">
-                      Join the waitlist
-                    </Link>
-                  </div>
-                  <div className="mt-3 sm:mt-0">
-                    <Link href="#features" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
-                      Learn more
-                    </Link>
-                  </div>
+          <div className="relative z-10 py-8 md:py-16 lg:py-24 lg:text-center">
+            <div className="mt-10 sm:mt-12 sm:mx-auto sm:max-w-xl">
+              <h1 className="text-4xl font-extrabold tracking-tight text-gray-100 sm:text-5xl md:text-6xl">
+                <span className="block mb-1">Streamline your</span>
+                <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500">
+                  busy schedule
+                </span>
+              </h1>
+              <p className="mt-6 text-xl text-gray-300">
+                FlowGrid helps you take control of your time and boost productivity by 30% through AI-powered task management, deadline tracking, and seamless calendar integration. Say goodbye to manual to-do lists and hello to effortless organization.
+              </p>
+              <div className="mt-8 sm:flex sm:justify-center space-x-4">
+                <div className="rounded-md shadow-lg shadow-purple-500/20">
+                  <Link href="#waitlist" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 md:text-lg transition-all duration-300 hover:shadow-purple-500/30">
+                    Join the waitlist
+                  </Link>
+                </div>
+                <div className="mt-3 sm:mt-0">
+                  <Link href="#features" className="w-full flex items-center justify-center px-8 py-3 border border-gray-700 text-base font-medium rounded-md text-gray-100 bg-gray-800/50 hover:bg-gray-800/70 md:text-lg transition-all duration-300 hover:border-purple-500/30">
+                    Learn more
+                  </Link>
                 </div>
               </div>
             </div>
