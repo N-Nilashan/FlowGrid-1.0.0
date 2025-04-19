@@ -129,6 +129,50 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Waitlist Section */}
+      <div id="waitlist" className="bg-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-lg mx-auto">
+            <h2 className="text-3xl font-extrabold text-white text-center sm:text-4xl">
+              Join the Waitlist
+            </h2>
+            <p className="mt-4 text-lg text-gray-400 text-center">
+              Be the first to know when we launch. Sign up for our waitlist now!
+            </p>
+            <form onSubmit={handleWaitlistSubmit} className="mt-8 sm:flex">
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500 focus:border-purple-500 sm:max-w-xs rounded-md"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3 sm:flex-shrink-0">
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Notify me'}
+                </button>
+              </div>
+            </form>
+            {submitStatus === 'success' && (
+              <p className="mt-2 text-green-400">Thanks for signing up!</p>
+            )}
+            {submitStatus === 'error' && (
+              <p className="mt-2 text-red-500">Oops! Something went wrong.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Glowing separator */}
       <div className="relative py-12">
         <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
@@ -264,50 +308,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Waitlist Section */}
-      <div className="bg-gray-900 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-lg mx-auto">
-            <h2 className="text-3xl font-extrabold text-white text-center sm:text-4xl">
-              Join the Waitlist
-            </h2>
-            <p className="mt-4 text-lg text-gray-400 text-center">
-              Be the first to know when we launch. Sign up for our waitlist now!
-            </p>
-            <form onSubmit={handleWaitlistSubmit} className="mt-8 sm:flex">
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500 focus:border-purple-500 sm:max-w-xs rounded-md"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3 sm:flex-shrink-0">
-                <button
-                  type="submit"
-                  className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Notify me'}
-                </button>
-              </div>
-            </form>
-            {submitStatus === 'success' && (
-              <p className="mt-2 text-green-400">Thanks for signing up!</p>
-            )}
-            {submitStatus === 'error' && (
-              <p className="mt-2 text-red-500">Oops! Something went wrong.</p>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Call to Action Section */}
       <div className="bg-gradient-to-r from-purple-900 to-fuchsia-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-[size:50px_50px] opacity-10"></div>
@@ -325,8 +325,8 @@ export default function Home() {
               </Link>
             </div>
             <div className="rounded-md shadow-lg shadow-purple-500/20">
-              <Link href="#features" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-800/50 hover:bg-purple-800/70 transition-all duration-300 border border-purple-500/20">
-                Learn more
+              <Link href="#waitlist" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-800/50 hover:bg-purple-800/70 transition-all duration-300 border border-purple-500/20">
+                Join the waitlist
               </Link>
             </div>
           </div>
