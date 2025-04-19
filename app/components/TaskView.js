@@ -9,7 +9,11 @@ const TaskView = () => {
     const dateSaved = localStorage.getItem('todaysGoalsDate');
     const today = new Date().toDateString();
     if (saved && dateSaved === today) {
-      return JSON.parse(saved);
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [];
+      }
     }
     // If not today or not set, reset
     localStorage.removeItem('todaysGoals');
@@ -43,12 +47,16 @@ const TaskView = () => {
     e.preventDefault();
     const trimmed = goalInput.trim();
     if (!trimmed || goals.length >= 5) return;
-    setGoals([...goals, trimmed]);
+    setGoals([...goals, { text: trimmed, completed: false }]);
     setGoalInput('');
   };
   const handleDeleteGoal = (idx) => {
     setGoals(goals.filter((_, i) => i !== idx));
   };
+  const handleToggleCompleted = (idx) => {
+    setGoals(goals.map((goal, i) => i === idx ? { ...goal, completed: !goal.completed } : goal));
+  };
+
 
   const [tasks, setTasks] = useState({ studies: [], work: [], health: [], personal: [], uncategorized: [] });
   const [isLoading, setIsLoading] = useState(true);
@@ -1050,37 +1058,53 @@ const TaskView = () => {
       <GamificationPanel />
 
       {/* Today's Goals Section */}
-      <div className="bg-gray-800 p-4 rounded-lg border border-purple-500/20 mb-6">
-        <h3 className="text-sm font-medium text-gray-400 mb-2">Today's Goals</h3>
-        <p className="text-xs text-gray-400 mb-3">Set up to 5 simple goals for today. These will reset at midnight.</p>
-        <form onSubmit={handleAddGoal} className="flex gap-2 mb-3">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900 p-5 rounded-2xl border-2 border-purple-600/30 shadow-lg mb-8">
+        <h3 className="text-base font-bold text-purple-300 mb-1 flex items-center gap-2">
+          <span className="inline-block bg-purple-700/30 rounded-full px-3 py-1 text-xs font-semibold tracking-wide">Today's Goals</span>
+        </h3>
+        <p className="text-xs text-gray-400 mb-4 italic">Set up to 5 goals to focus on today. Mark them as done as you progress. Goals reset at midnight.</p>
+        <form onSubmit={handleAddGoal} className="flex gap-2 mb-4">
           <input
             type="text"
-            className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="flex-1 px-3 py-2 rounded-xl bg-gray-700 text-white text-sm border border-purple-700/40 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
             placeholder={goals.length >= 5 ? 'Goal limit reached' : 'Add a goal for today...'}
             value={goalInput}
             maxLength={60}
             onChange={e => setGoalInput(e.target.value)}
             disabled={goals.length >= 5}
+            autoComplete="off"
           />
           <button
             type="submit"
             disabled={!goalInput.trim() || goals.length >= 5}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${goals.length >= 5 || !goalInput.trim()
-              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'bg-purple-600 text-white hover:bg-purple-700'}`}
+            className={`px-5 py-2 rounded-xl text-sm font-semibold shadow transition-all duration-200 ${goals.length >= 5 || !goalInput.trim()
+              ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
+              : 'bg-gradient-to-r from-purple-500 to-purple-700 text-white hover:from-purple-600 hover:to-purple-800'}`}
           >
             Add
           </button>
         </form>
         <ul className="space-y-2">
           {goals.map((goal, idx) => (
-            <li key={idx} className="flex items-center justify-between bg-gray-700 rounded-lg px-3 py-2">
-              <span className="text-sm text-white break-words flex-1">{goal}</span>
+            <li key={idx} className={`flex items-center justify-between bg-gray-800/80 rounded-xl px-4 py-2 shadow border ${goal.completed ? 'border-green-400/40' : 'border-gray-700/60'}`}>
+              <button
+                className={`mr-3 w-6 h-6 flex items-center justify-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${goal.completed ? 'border-green-400 bg-green-500/30' : 'border-gray-500 bg-gray-900 hover:border-purple-400'}`}
+                onClick={() => handleToggleCompleted(idx)}
+                aria-label={goal.completed ? 'Mark as not done' : 'Mark as done'}
+                tabIndex={0}
+              >
+                {goal.completed ? (
+                  <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                ) : (
+                  <span className="block w-3 h-3 rounded-full bg-transparent"></span>
+                )}
+              </button>
+              <span className={`text-sm flex-1 break-words transition-colors duration-200 ${goal.completed ? 'line-through text-green-300/70' : 'text-white'}`}>{goal.text}</span>
               <button
                 className="ml-3 text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 rounded transition-colors"
                 onClick={() => handleDeleteGoal(idx)}
                 title="Delete goal"
+                aria-label="Delete goal"
               >
                 Delete
               </button>
