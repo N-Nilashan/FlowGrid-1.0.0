@@ -124,13 +124,12 @@ const TaskView = () => {
     }
   };
 
-  // Debounce the update to avoid too many requests
+  // Immediately sync gamification data after changes, no debounce
   useEffect(() => {
-    const timer = setTimeout(() => {
-      updateGamificationData();
-    }, 1000); // Wait 1 second after the last change
-
-    return () => clearTimeout(timer);
+    updateGamificationData();
+    // Only update when values actually change
+    // Remove debounce and avoid redundant server fetches
+    // This ensures backend is always in sync with frontend
   }, [streak, lastCompletedDate, experience, level, achievements]);
 
   // Calculate level based on experience
@@ -875,6 +874,24 @@ const TaskView = () => {
                 />
               </div>
             </div>
+
+            {/* Achievements List */}
+            <div className="mt-6">
+              <h4 className="text-sm font-semibold text-gray-300 mb-2">Achievements</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {achievements.map((a) => (
+                  <div
+                    key={a.id}
+                    className={`flex flex-col items-center bg-gray-700/60 rounded-lg p-3 border transition-all duration-300 ${a.completed ? 'border-green-500/60' : 'border-gray-600/40 opacity-60'}`}
+                  >
+                    <span className="text-2xl mb-1">{a.icon}</span>
+                    <span className={`text-xs font-bold mb-0.5 ${a.completed ? 'text-green-400' : 'text-gray-400'}`}>{a.title}</span>
+                    <span className="text-[10px] text-gray-400 text-center">{a.description}</span>
+                    {a.completed && <span className="mt-1 text-green-400 text-xs font-semibold">Unlocked</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -912,29 +929,24 @@ const TaskView = () => {
     );
   };
 
-  // Initialize tasks and gamification data
+  // Initialize tasks and gamification data only once or when viewMode changes
   useEffect(() => {
     const initializeData = async () => {
-      // Only fetch if we haven't fetched in the last 5 minutes
-      const now = Date.now();
-      if (!lastFetchTime || (now - lastFetchTime) > 5 * 60 * 1000) {
-        setIsLoading(true);
-        try {
-          await Promise.all([
-            fetchTasks(),
-            fetchGamificationData()
-          ]);
-          setLastFetchTime(now);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setIsLoading(false);
-        }
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchTasks(),
+          fetchGamificationData()
+        ]);
+        setLastFetchTime(Date.now());
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     initializeData();
-  }, [viewMode, lastFetchTime]); // Only re-fetch when view mode changes or when enough time has passed
+  }, [viewMode]); // Only re-fetch when view mode changes
 
   if (isLoading) {
     return <LoadingAnimation stage="calendar" />;
